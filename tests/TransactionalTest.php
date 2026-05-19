@@ -146,7 +146,7 @@ class TransactionalTest extends TestCase
       ));
 
     // Make the API call
-    $result = $this->client->transactional->get(
+    $result = $this->client->transactional->list(
       per_page: $per_page,
       cursor: $cursor
     );

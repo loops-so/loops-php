@@ -103,11 +103,22 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [contacts->checkSuppression()](#contacts-checksuppression)
 - [contacts->removeSuppression()](#contacts-removesuppression)
 - [contactProperties->create()](#contactproperties-create)
-- [contactProperties->get()](#contactproperties-get)
-- [mailingLists->get()](#mailinglists-get)
+- [contactProperties->list()](#contactproperties-list)
+- [mailingLists->list()](#mailinglists-list)
 - [events->send()](#events-send)
 - [transactional->send()](#transactional-send)
-- [transactional->get()](#transactional-get)
+- [transactional->list()](#transactional-list)
+- [dedicatedSendingIps->list()](#dedicatedsendingips-list)
+- [themes->list()](#themes-list)
+- [themes->get()](#themes-get)
+- [components->list()](#components-list)
+- [components->get()](#components-get)
+- [campaigns->list()](#campaigns-list)
+- [campaigns->create()](#campaigns-create)
+- [campaigns->get()](#campaigns-get)
+- [campaigns->update()](#campaigns-update)
+- [emailMessages->get()](#emailmessages-get)
+- [emailMessages->update()](#emailmessages-update)
 
 ---
 
@@ -524,7 +535,7 @@ Error handling is done through the `APIError` class, which provides `getStatusCo
 
 ---
 
-### contactProperties->get()
+### contactProperties->list()
 
 Get a list of your account's contact properties.
 
@@ -539,9 +550,9 @@ Get a list of your account's contact properties.
 #### Example
 
 ```php
-$result = $loops->contactProperties->get();
+$result = $loops->contactProperties->list();
 
-$result = $loops->contactProperties->get(list: "custom");
+$result = $loops->contactProperties->list(list: "custom");
 ```
 
 #### Response
@@ -610,7 +621,7 @@ This method will return a list of contact property objects containing `key`, `la
 
 ---
 
-### mailingLists->get()
+### mailingLists->list()
 
 Get a list of your account's mailing lists. [Read more about mailing lists](https://loops.so/docs/contacts/mailing-lists)
 
@@ -623,7 +634,7 @@ None
 #### Example
 
 ```php
-$result = $loops->mailingLists->get();
+$result = $loops->mailingLists->list();
 ```
 
 #### Response
@@ -830,7 +841,7 @@ If there is a problem with the request, a descriptive error message will be retu
 
 ---
 
-### transactional->get()
+### transactional->list()
 
 Get a list of published transactional emails.
 
@@ -846,9 +857,9 @@ Get a list of published transactional emails.
 #### Example
 
 ```php
-$result = $loops->transactional->get();
+$result = $loops->transactional->list();
 
-$result = $loops->transactional->get(per_page: 15);
+$result = $loops->transactional->list(per_page: 15);
 ```
 
 #### Response
@@ -888,6 +899,262 @@ $result = $loops->transactional->get(per_page: 15);
     ...
   ]
 }
+```
+
+---
+
+### dedicatedSendingIps->list()
+
+Get a list of Loops' dedicated sending IP addresses.
+
+[API Reference](https://loops.so/docs/api-reference/get-dedicated-sending-ips)
+
+#### Parameters
+
+None
+
+#### Example
+
+```php
+$result = $loops->dedicatedSendingIps->list();
+```
+
+#### Response
+
+```json
+["1.2.3.4", "5.6.7.8"]
+```
+
+---
+
+### themes->list()
+
+List email themes.
+
+[API Reference](https://loops.so/docs/api-reference/list-themes)
+
+#### Parameters
+
+| Name        | Type    | Required | Notes                                                                                                                         |
+| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+
+#### Example
+
+```php
+$result = $loops->themes->list();
+
+$result = $loops->themes->list(per_page: 15, cursor: 'cursor123');
+```
+
+---
+
+### themes->get()
+
+Get a single email theme by ID.
+
+[API Reference](https://loops.so/docs/api-reference/get-theme)
+
+#### Parameters
+
+| Name        | Type   | Required | Notes              |
+| ----------- | ------ | -------- | ------------------ |
+| `$theme_id` | string | Yes      | The ID of the theme. |
+
+#### Example
+
+```php
+$result = $loops->themes->get(theme_id: 'theme_abc123');
+```
+
+---
+
+### components->list()
+
+List email components.
+
+[API Reference](https://loops.so/docs/api-reference/list-components)
+
+#### Parameters
+
+| Name        | Type    | Required | Notes                                                                                                                         |
+| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+
+#### Example
+
+```php
+$result = $loops->components->list();
+```
+
+---
+
+### components->get()
+
+Get a single email component by ID.
+
+[API Reference](https://loops.so/docs/api-reference/get-component)
+
+#### Parameters
+
+| Name            | Type   | Required | Notes                   |
+| --------------- | ------ | -------- | ----------------------- |
+| `$component_id` | string | Yes      | The ID of the component. |
+
+#### Example
+
+```php
+$result = $loops->components->get(component_id: 'component_abc123');
+```
+
+---
+
+### campaigns->list()
+
+List campaigns.
+
+[API Reference](https://loops.so/docs/api-reference/list-campaigns)
+
+#### Parameters
+
+| Name        | Type    | Required | Notes                                                                                                                         |
+| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+
+#### Example
+
+```php
+$result = $loops->campaigns->list();
+```
+
+---
+
+### campaigns->create()
+
+Create a new draft campaign.
+
+[API Reference](https://loops.so/docs/api-reference/create-campaign)
+
+#### Parameters
+
+| Name    | Type   | Required | Notes              |
+| ------- | ------ | -------- | ------------------ |
+| `$name` | string | Yes      | The campaign name. |
+
+#### Example
+
+```php
+$result = $loops->campaigns->create(name: 'Spring announcement');
+```
+
+#### Response
+
+```json
+{
+  "success": true,
+  "campaignId": "camp_123",
+  "name": "Spring announcement",
+  "status": "Draft",
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+  "emailMessageId": "msg_123",
+  "emailMessageContentRevisionId": "rev_123"
+}
+```
+
+---
+
+### campaigns->get()
+
+Get a single campaign by ID.
+
+[API Reference](https://loops.so/docs/api-reference/get-campaign)
+
+#### Parameters
+
+| Name           | Type   | Required | Notes                 |
+| -------------- | ------ | -------- | --------------------- |
+| `$campaign_id` | string | Yes      | The ID of the campaign. |
+
+#### Example
+
+```php
+$result = $loops->campaigns->get(campaign_id: 'camp_123');
+```
+
+---
+
+### campaigns->update()
+
+Update a draft campaign's name.
+
+[API Reference](https://loops.so/docs/api-reference/update-campaign)
+
+#### Parameters
+
+| Name           | Type   | Required | Notes                 |
+| -------------- | ------ | -------- | --------------------- |
+| `$campaign_id` | string | Yes      | The ID of the campaign. |
+| `$name`        | string | Yes      | The updated name.     |
+
+#### Example
+
+```php
+$result = $loops->campaigns->update(
+  campaign_id: 'camp_123',
+  name: 'Updated name'
+);
+```
+
+---
+
+### emailMessages->get()
+
+Get an email message, including its compiled LMX content.
+
+[API Reference](https://loops.so/docs/api-reference/get-email-message)
+
+#### Parameters
+
+| Name                | Type   | Required | Notes                       |
+| ------------------- | ------ | -------- | --------------------------- |
+| `$email_message_id` | string | Yes      | The ID of the email message. |
+
+#### Example
+
+```php
+$result = $loops->emailMessages->get(email_message_id: 'msg_123');
+```
+
+---
+
+### emailMessages->update()
+
+Update an email message's subject, preview text, sender, or LMX content.
+
+[API Reference](https://loops.so/docs/api-reference/update-email-message)
+
+#### Parameters
+
+| Name                | Type  | Required | Notes                                                                                                                                                                                                 |
+| ------------------- | ----- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$email_message_id` | string | Yes   | The ID of the email message.                                                                                                                                                                          |
+| `$fields`           | array | No       | Fields to update. Use API field names: `expectedRevisionId`, `subject`, `previewText`, `fromName`, `fromEmail`, `replyToEmail`, `lmx`. Supply `expectedRevisionId` matching the current `contentRevisionId` to avoid 409 conflicts. |
+
+#### Example
+
+```php
+$result = $loops->emailMessages->update(
+  email_message_id: 'msg_123',
+  fields: [
+    'expectedRevisionId' => 'rev_123',
+    'subject' => 'Updated subject',
+    'lmx' => '<Email><Text>Hello</Text></Email>'
+  ]
+);
 ```
 
 ---
