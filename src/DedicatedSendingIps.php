@@ -4,7 +4,7 @@ namespace Loops;
 
 use Loops\LoopsClient;
 
-class MailingLists
+class DedicatedSendingIps
 {
     private $client;
 
@@ -13,8 +13,8 @@ class MailingLists
         $this->client = $client;
     }
 
-    public function list()
+    public function list(): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/lists');
+        return $this->client->query(method: 'GET', endpoint: 'v1/dedicated-sending-ips');
     }
 }

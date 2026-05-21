@@ -35,7 +35,7 @@ class Transactional
         ]);
     }
 
-    public function get(?int $per_page = 20, ?string $cursor = null): mixed
+    public function list(?int $per_page = 20, ?string $cursor = null): mixed
     {
 
         $query = [

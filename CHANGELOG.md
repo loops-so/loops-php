@@ -1,3 +1,9 @@
+## v3.0.0 - May 19, 2026
+
+Added support for dedicated sending IPs, themes, components, campaigns, and email messages.
+
+Renamed methods for consistency: single-resource lookups use `get()`, collection endpoints use `list()`. This affects `contactProperties`, `mailingLists`, and `transactional` from prior versions.
+
 ## v2.1.0 - Apr 8, 2026
 
 Added `contacts->checkSuppression()` and `contacts->removeSuppression()` for managing contact suppressions.

@@ -13,6 +13,11 @@ class LoopsClient
   public MailingLists $mailingLists;
   public Transactional $transactional;
   public ContactProperties $contactProperties;
+  public DedicatedSendingIps $dedicatedSendingIps;
+  public Themes $themes;
+  public Components $components;
+  public Campaigns $campaigns;
+  public EmailMessages $emailMessages;
 
   public function __construct(string $api_key)
   {
@@ -31,6 +36,11 @@ class LoopsClient
     $this->mailingLists = new MailingLists(client: $this);
     $this->transactional = new Transactional(client: $this);
     $this->contactProperties = new ContactProperties(client: $this);
+    $this->dedicatedSendingIps = new DedicatedSendingIps(client: $this);
+    $this->themes = new Themes(client: $this);
+    $this->components = new Components(client: $this);
+    $this->campaigns = new Campaigns(client: $this);
+    $this->emailMessages = new EmailMessages(client: $this);
   }
 
   /**

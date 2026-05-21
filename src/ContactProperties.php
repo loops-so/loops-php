@@ -24,7 +24,7 @@ class ContactProperties
             'json' => $payload
         ]);
     }
-    public function get(?string $list = null): mixed
+    public function list(?string $list = null): mixed
     {
         $query = [];
         if ($list) {
