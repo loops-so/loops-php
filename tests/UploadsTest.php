@@ -10,61 +10,101 @@ class UploadsTest extends TestCase
 {
   private LoopsClient $client;
   private \GuzzleHttp\Client $mockHttpClient;
+  private string $imagePath;
 
   protected function setUp(): void
   {
     $this->mockHttpClient = $this->createMock(\GuzzleHttp\Client::class);
     $this->client = new LoopsClient('test_api_key');
     $this->client->setHttpClient($this->mockHttpClient);
+
+    $this->imagePath = sys_get_temp_dir() . '/loops_upload_test.png';
+    file_put_contents(
+      $this->imagePath,
+      base64_decode('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==')
+    );
   }
 
-  public function testCreateUpload(): void
+  protected function tearDown(): void
   {
+    if (file_exists($this->imagePath)) {
+      unlink($this->imagePath);
+    }
+  }
+
+  public function testUpload(): void
+  {
+    $presignedUrl = 'https://example.com/upload';
+    $assetId = 'asset_123';
+    $fileContents = file_get_contents($this->imagePath);
+    $contentLength = strlen($fileContents);
+
+    $this->mockHttpClient
+      ->expects($this->exactly(2))
+      ->method('post')
+      ->willReturnCallback(function ($endpoint, $options = []) use ($presignedUrl, $assetId, $contentLength) {
+        if ($endpoint === 'v1/uploads') {
+          $this->assertEquals('image/png', $options['json']['contentType']);
+          $this->assertEquals($contentLength, $options['json']['contentLength']);
+
+          return new Response(
+            status: 200,
+            body: json_encode([
+              'emailAssetId' => $assetId,
+              'presignedUrl' => $presignedUrl,
+            ])
+          );
+        }
+
+        if ($endpoint === 'v1/uploads/' . $assetId . '/complete') {
+          return new Response(
+            status: 200,
+            body: json_encode([
+              'emailAssetId' => $assetId,
+              'finalUrl' => 'https://cdn.example.com/image.png',
+            ])
+          );
+        }
+
+        $this->fail('Unexpected POST endpoint: ' . $endpoint);
+      });
+
     $this->mockHttpClient
       ->expects($this->once())
-      ->method('post')
+      ->method('put')
       ->with(
-        'v1/uploads',
-        $this->callback(function ($options) {
-          return $options['json']['contentType'] === 'image/png'
-            && $options['json']['contentLength'] === 102400;
+        $presignedUrl,
+        $this->callback(function ($options) use ($fileContents, $contentLength) {
+          return $options['headers']['Content-Type'] === 'image/png'
+            && $options['headers']['Content-Length'] === (string) $contentLength
+            && $options['body'] === $fileContents;
         })
       )
-      ->willReturn(new Response(
-        status: 200,
-        body: json_encode([
-          'emailAssetId' => 'asset_123',
-          'presignedUrl' => 'https://example.com/upload'
-        ])
-      ));
+      ->willReturn(new Response(status: 200));
 
-    $result = $this->client->uploads->create(
-      content_type: 'image/png',
-      content_length: 102400
-    );
+    $result = $this->client->uploads->upload(path: $this->imagePath);
 
-    $this->assertEquals('asset_123', $result['emailAssetId']);
-    $this->assertEquals('https://example.com/upload', $result['presignedUrl']);
+    $this->assertEquals($assetId, $result['emailAssetId']);
+    $this->assertEquals('https://cdn.example.com/image.png', $result['finalUrl']);
   }
 
-  public function testCompleteUpload(): void
+  public function testUploadRejectsMissingFile(): void
   {
-    $assetId = 'asset_123';
+    $this->expectException(\InvalidArgumentException::class);
 
-    $this->mockHttpClient
-      ->expects($this->once())
-      ->method('post')
-      ->with('v1/uploads/' . $assetId . '/complete')
-      ->willReturn(new Response(
-        status: 200,
-        body: json_encode([
-          'emailAssetId' => $assetId,
-          'finalUrl' => 'https://cdn.example.com/image.png'
-        ])
-      ));
+    $this->client->uploads->upload(path: '/path/does/not/exist.png');
+  }
 
-    $result = $this->client->uploads->complete(id: $assetId);
+  public function testUploadRejectsUnsupportedType(): void
+  {
+    $path = sys_get_temp_dir() . '/loops_upload_test.txt';
+    file_put_contents($path, 'not an image');
 
-    $this->assertEquals('https://cdn.example.com/image.png', $result['finalUrl']);
+    try {
+      $this->expectException(\InvalidArgumentException::class);
+      $this->client->uploads->upload(path: $path);
+    } finally {
+      unlink($path);
+    }
   }
 }

@@ -113,8 +113,7 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [transactional->update()](#transactional-update)
 - [transactional->ensureDraft()](#transactional-ensuredraft)
 - [transactional->publish()](#transactional-publish)
-- [uploads->create()](#uploads-create)
-- [uploads->complete()](#uploads-complete)
+- [uploads->upload()](#uploads-upload)
 - [dedicatedSendingIps->list()](#dedicatedsendingips-list)
 - [themes->list()](#themes-list)
 - [themes->get()](#themes-get)
@@ -1041,55 +1040,24 @@ $result = $loops->transactional->publish(transactional_id: 'txn_123');
 
 ---
 
-### uploads->create()
+### uploads->upload()
 
-Request a pre-signed URL to upload an image asset. Upload the file with HTTP `PUT` to the returned `presignedUrl` using the same `Content-Type` and `Content-Length`, then call `uploads->complete()`.
+Upload an image asset for use in LMX email content. The returned `finalUrl` can be used in an `<Image>` tag in your [LMX content](https://loops.so/docs/creating-emails/lmx).
 
 [API Reference](https://loops.so/docs/api-reference/create-upload)
 
 #### Parameters
 
-| Name              | Type    | Required | Notes                                                                                      |
-| ----------------- | ------- | -------- | ------------------------------------------------------------------------------------------ |
-| `$content_type`   | string  | Yes      | MIME type of the file (`image/jpeg`, `image/png`, `image/gif`, or `image/webp`).           |
-| `$content_length` | integer | Yes      | File size in bytes. Must be a positive integer no greater than 4,000,000.                  |
+| Name    | Type   | Required | Notes                                                                                                           |
+| ------- | ------ | -------- | --------------------------------------------------------------------------------------------------------------- |
+| `$path` | string | Yes      | Path to an image file. Supported types: JPEG, PNG, GIF, and WebP. Maximum file size is 4,000,000 bytes (4 MB). |
 
 #### Example
 
 ```php
-$result = $loops->uploads->create(
-  content_type: 'image/png',
-  content_length: 102400
-);
-```
+$result = $loops->uploads->upload(path: '/path/to/image.png');
 
-#### Response
-
-```json
-{
-  "emailAssetId": "asset_123",
-  "presignedUrl": "https://example.com/upload"
-}
-```
-
----
-
-### uploads->complete()
-
-Finalize an asset after the file has been uploaded to the pre-signed URL.
-
-[API Reference](https://loops.so/docs/api-reference/complete-upload)
-
-#### Parameters
-
-| Name  | Type   | Required | Notes                                                                 |
-| ----- | ------ | -------- | --------------------------------------------------------------------- |
-| `$id` | string | Yes      | The `emailAssetId` returned from `uploads->create()`.                  |
-
-#### Example
-
-```php
-$result = $loops->uploads->complete(id: 'asset_123');
+$imageUrl = $result['finalUrl'];
 ```
 
 #### Response

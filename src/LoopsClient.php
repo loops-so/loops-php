@@ -56,6 +56,11 @@ class LoopsClient
     $this->httpClient = $client;
   }
 
+  public function getHttpClient(): \GuzzleHttp\Client
+  {
+    return $this->httpClient;
+  }
+
   /**
    * Performs an HTTP request to the Loops API
    *

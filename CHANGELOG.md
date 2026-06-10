@@ -2,7 +2,7 @@
 
 Added support for image uploads and transactional email content management.
 
-- `uploads->create()` and `uploads->complete()` for the uploads API.
+- `uploads->upload()` for uploading images.
 - `transactional->create()`, `transactional->get()`, `transactional->update()`, `transactional->ensureDraft()`, and `transactional->publish()` for managing transactional emails.
 
 ## v3.0.0 - May 19, 2026
