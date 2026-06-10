@@ -35,17 +35,47 @@ class Transactional
         ]);
     }
 
-    public function list(?int $per_page = 20, ?string $cursor = null): mixed
+    public function list(?int $per_page = null, ?string $cursor = null): mixed
     {
-
-        $query = [
-            'per_page' => $per_page
-        ];
-        if ($cursor)
+        $query = [];
+        if ($per_page !== null) {
+            $query['perPage'] = $per_page;
+        }
+        if ($cursor) {
             $query['cursor'] = $cursor;
+        }
 
-        return $this->client->query(method: 'GET', endpoint: 'v1/transactional', options: [
+        return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails', options: [
             'query' => $query
         ]);
+    }
+
+    public function create(string $name): mixed
+    {
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails', options: [
+            'json' => ['name' => $name]
+        ]);
+    }
+
+    public function get(string $transactional_id): mixed
+    {
+        return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails/' . $transactional_id);
+    }
+
+    public function update(string $transactional_id, string $name): mixed
+    {
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $transactional_id, options: [
+            'json' => ['name' => $name]
+        ]);
+    }
+
+    public function ensureDraft(string $transactional_id): mixed
+    {
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $transactional_id . '/draft');
+    }
+
+    public function publish(string $transactional_id): mixed
+    {
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $transactional_id . '/publish');
     }
 }

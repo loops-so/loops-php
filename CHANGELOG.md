@@ -1,3 +1,10 @@
+## v3.1.0 - Jun 10, 2026
+
+Added support for image uploads and transactional email content management.
+
+- `uploads->create()` and `uploads->complete()` for the uploads API.
+- `transactional->create()`, `transactional->get()`, `transactional->update()`, `transactional->ensureDraft()`, and `transactional->publish()` for managing transactional emails.
+
 ## v3.0.0 - May 19, 2026
 
 Added support for dedicated sending IPs, themes, components, campaigns, and email messages.

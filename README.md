@@ -108,6 +108,13 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [events->send()](#events-send)
 - [transactional->send()](#transactional-send)
 - [transactional->list()](#transactional-list)
+- [transactional->create()](#transactional-create)
+- [transactional->get()](#transactional-get)
+- [transactional->update()](#transactional-update)
+- [transactional->ensureDraft()](#transactional-ensuredraft)
+- [transactional->publish()](#transactional-publish)
+- [uploads->create()](#uploads-create)
+- [uploads->complete()](#uploads-complete)
 - [dedicatedSendingIps->list()](#dedicatedsendingips-list)
 - [themes->list()](#themes-list)
 - [themes->get()](#themes-get)
@@ -843,7 +850,7 @@ If there is a problem with the request, a descriptive error message will be retu
 
 ### transactional->list()
 
-Get a list of published transactional emails.
+Get a paginated list of transactional emails, most recently created first.
 
 [API Reference](https://loops.so/docs/api-reference/list-transactional-emails)
 
@@ -872,24 +879,36 @@ $result = $loops->transactional->list(per_page: 15);
     "perPage": 20,
     "totalPages": 2,
     "nextCursor": "clyo0q4wo01p59fsecyxqsh38",
-    "nextPage": "https://app.loops.so/api/v1/transactional?cursor=clyo0q4wo01p59fsecyxqsh38&perPage=20"
+    "nextPage": "https://app.loops.so/api/v1/transactional-emails?cursor=clyo0q4wo01p59fsecyxqsh38&perPage=20"
   },
   "data": [
     {
       "id": "clfn0k1yg001imo0fdeqg30i8",
-      "lastUpdated": "2023-11-06T17:48:07.249Z",
+      "name": "Welcome email",
+      "draftEmailMessageId": null,
+      "publishedEmailMessageId": "msg_abc123",
+      "createdAt": "2023-11-06T17:48:07.249Z",
+      "updatedAt": "2023-11-06T17:48:07.249Z",
       "dataVariables": []
     },
     {
       "id": "cll42l54f20i1la0lfooe3z12",
-      "lastUpdated": "2025-02-02T02:56:28.845Z",
+      "name": "Password reset",
+      "draftEmailMessageId": "msg_def456",
+      "publishedEmailMessageId": "msg_ghi789",
+      "createdAt": "2025-01-15T10:00:00.000Z",
+      "updatedAt": "2025-02-02T02:56:28.845Z",
       "dataVariables": [
         "confirmationUrl"
       ]
     },
     {
       "id": "clw6rbuwp01rmeiyndm80155l",
-      "lastUpdated": "2024-05-14T19:02:52.000Z",
+      "name": "Team invite",
+      "draftEmailMessageId": "msg_jkl012",
+      "publishedEmailMessageId": null,
+      "createdAt": "2024-05-14T19:02:52.000Z",
+      "updatedAt": "2024-05-14T19:02:52.000Z",
       "dataVariables": [
         "firstName",
         "lastName",
@@ -898,6 +917,187 @@ $result = $loops->transactional->list(per_page: 15);
     },
     ...
   ]
+}
+```
+
+---
+
+### transactional->create()
+
+Create a new transactional email. An empty draft email message is created automatically.
+
+[API Reference](https://loops.so/docs/api-reference/create-transactional-email)
+
+#### Parameters
+
+| Name    | Type   | Required | Notes                              |
+| ------- | ------ | -------- | ---------------------------------- |
+| `$name` | string | Yes      | The name of the transactional email. |
+
+#### Example
+
+```php
+$result = $loops->transactional->create(name: 'Welcome email');
+```
+
+#### Response
+
+```json
+{
+  "id": "txn_123",
+  "name": "Welcome email",
+  "draftEmailMessageId": "msg_123",
+  "draftEmailMessageContentRevisionId": "rev_123",
+  "publishedEmailMessageId": null,
+  "createdAt": "2025-01-01T00:00:00.000Z",
+  "updatedAt": "2025-01-01T00:00:00.000Z",
+  "dataVariables": []
+}
+```
+
+---
+
+### transactional->get()
+
+Get a single transactional email by ID.
+
+[API Reference](https://loops.so/docs/api-reference/get-transactional-email)
+
+#### Parameters
+
+| Name                | Type   | Required | Notes                            |
+| ------------------- | ------ | -------- | -------------------------------- |
+| `$transactional_id` | string | Yes      | The ID of the transactional email. |
+
+#### Example
+
+```php
+$result = $loops->transactional->get(transactional_id: 'txn_123');
+```
+
+---
+
+### transactional->update()
+
+Update a transactional email's name.
+
+[API Reference](https://loops.so/docs/api-reference/update-transactional-email)
+
+#### Parameters
+
+| Name                | Type   | Required | Notes                            |
+| ------------------- | ------ | -------- | -------------------------------- |
+| `$transactional_id` | string | Yes      | The ID of the transactional email. |
+| `$name`             | string | Yes      | The updated name.                |
+
+#### Example
+
+```php
+$result = $loops->transactional->update(
+  transactional_id: 'txn_123',
+  name: 'Updated welcome email'
+);
+```
+
+---
+
+### transactional->ensureDraft()
+
+Ensure a transactional email has a draft email message. If a draft already exists it is returned unchanged; otherwise a new empty draft is created.
+
+[API Reference](https://loops.so/docs/api-reference/ensure-transactional-email-draft)
+
+#### Parameters
+
+| Name                | Type   | Required | Notes                            |
+| ------------------- | ------ | -------- | -------------------------------- |
+| `$transactional_id` | string | Yes      | The ID of the transactional email. |
+
+#### Example
+
+```php
+$result = $loops->transactional->ensureDraft(transactional_id: 'txn_123');
+```
+
+---
+
+### transactional->publish()
+
+Publish the transactional email's current draft email message.
+
+[API Reference](https://loops.so/docs/api-reference/publish-transactional-email)
+
+#### Parameters
+
+| Name                | Type   | Required | Notes                            |
+| ------------------- | ------ | -------- | -------------------------------- |
+| `$transactional_id` | string | Yes      | The ID of the transactional email. |
+
+#### Example
+
+```php
+$result = $loops->transactional->publish(transactional_id: 'txn_123');
+```
+
+---
+
+### uploads->create()
+
+Request a pre-signed URL to upload an image asset. Upload the file with HTTP `PUT` to the returned `presignedUrl` using the same `Content-Type` and `Content-Length`, then call `uploads->complete()`.
+
+[API Reference](https://loops.so/docs/api-reference/create-upload)
+
+#### Parameters
+
+| Name              | Type    | Required | Notes                                                                                      |
+| ----------------- | ------- | -------- | ------------------------------------------------------------------------------------------ |
+| `$content_type`   | string  | Yes      | MIME type of the file (`image/jpeg`, `image/png`, `image/gif`, or `image/webp`).           |
+| `$content_length` | integer | Yes      | File size in bytes. Must be a positive integer no greater than 4,000,000.                  |
+
+#### Example
+
+```php
+$result = $loops->uploads->create(
+  content_type: 'image/png',
+  content_length: 102400
+);
+```
+
+#### Response
+
+```json
+{
+  "emailAssetId": "asset_123",
+  "presignedUrl": "https://example.com/upload"
+}
+```
+
+---
+
+### uploads->complete()
+
+Finalize an asset after the file has been uploaded to the pre-signed URL.
+
+[API Reference](https://loops.so/docs/api-reference/complete-upload)
+
+#### Parameters
+
+| Name  | Type   | Required | Notes                                                                 |
+| ----- | ------ | -------- | --------------------------------------------------------------------- |
+| `$id` | string | Yes      | The `emailAssetId` returned from `uploads->create()`.                  |
+
+#### Example
+
+```php
+$result = $loops->uploads->complete(id: 'asset_123');
+```
+
+#### Response
+
+```json
+{
+  "emailAssetId": "asset_123",
+  "finalUrl": "https://cdn.example.com/image.png"
 }
 ```
 

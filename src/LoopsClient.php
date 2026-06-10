@@ -18,6 +18,7 @@ class LoopsClient
   public Components $components;
   public Campaigns $campaigns;
   public EmailMessages $emailMessages;
+  public Uploads $uploads;
 
   public function __construct(string $api_key)
   {
@@ -41,6 +42,7 @@ class LoopsClient
     $this->components = new Components(client: $this);
     $this->campaigns = new Campaigns(client: $this);
     $this->emailMessages = new EmailMessages(client: $this);
+    $this->uploads = new Uploads(client: $this);
   }
 
   /**
