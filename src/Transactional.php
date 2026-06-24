@@ -47,13 +47,11 @@ class Transactional
 
     public function create(string $name, ?string $transactional_group_id = null): mixed
     {
-        $payload = ['name' => $name];
-        if ($transactional_group_id !== null) {
-            $payload['transactionalGroupId'] = $transactional_group_id;
-        }
-
         return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails', options: [
-            'json' => $payload
+            'json' => Util::omitNull([
+                'name' => $name,
+                'transactionalGroupId' => $transactional_group_id,
+            ])
         ]);
     }
 
@@ -67,13 +65,10 @@ class Transactional
         ?string $name = null,
         ?string $transactional_group_id = null
     ): mixed {
-        $payload = [];
-        if ($name !== null) {
-            $payload['name'] = $name;
-        }
-        if ($transactional_group_id !== null) {
-            $payload['transactionalGroupId'] = $transactional_group_id;
-        }
+        $payload = Util::omitNull([
+            'name' => $name,
+            'transactionalGroupId' => $transactional_group_id,
+        ]);
         if ($payload === []) {
             throw new \InvalidArgumentException(message: 'At least one field must be provided.');
         }

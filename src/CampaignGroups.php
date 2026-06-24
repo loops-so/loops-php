@@ -25,13 +25,12 @@ class CampaignGroups
 
     public function create(string $name, ?string $description = null): mixed
     {
-        $payload = ['name' => $name];
-        if ($description !== null) {
-            $payload['description'] = $description;
-        }
 
         return $this->client->query(method: 'POST', endpoint: 'v1/campaign-groups', options: [
-            'json' => $payload
+            'json' => Util::omitNull([
+                'name' => $name,
+                'description' => $description,
+            ])
         ]);
     }
 
@@ -42,12 +41,12 @@ class CampaignGroups
 
     public function update(string $campaign_group_id, ?string $name = null, ?string $description = null): mixed
     {
-        $payload = [];
-        if ($name !== null) {
-            $payload['name'] = $name;
-        }
-        if ($description !== null) {
-            $payload['description'] = $description;
+        $payload = Util::omitNull([
+            'name' => $name,
+            'description' => $description,
+        ]);
+        if ($payload === []) {
+            throw new \InvalidArgumentException(message: 'At least one field must be provided.');
         }
 
         return $this->client->query(method: 'POST', endpoint: 'v1/campaign-groups/' . $campaign_group_id, options: [

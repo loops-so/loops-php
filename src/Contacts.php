@@ -15,11 +15,13 @@ class Contacts
 
     public function create(string $email, ?array $properties = [], ?array $mailing_lists = []): mixed
     {
-        $payload = [
-            'email' => $email,
-            'mailingLists' => $mailing_lists
-        ];
-        $payload = array_merge($payload, $properties);
+        $payload = array_merge(
+            [
+                'email' => $email,
+                'mailingLists' => $mailing_lists
+            ], 
+            $properties
+        );
 
         return $this->client->query(method: 'POST', endpoint: 'v1/contacts/create', options: [
             'json' => $payload
@@ -31,17 +33,12 @@ class Contacts
         if (!$email && !$user_id) {
             throw new \InvalidArgumentException(message: 'You must provide an email or user_id value.');
         }
-        $payload = [];
-        if ($email !== null) {
-            $payload['email'] = $email;
-        }
-        if ($user_id !== null) {
-            $payload['userId'] = $user_id;
-        }
-        if ($mailing_lists !== []) {
-            $payload['mailingLists'] = $mailing_lists;
-        }
-        $payload = array_merge($payload, $properties);
+
+        $payload = array_merge(
+            Util::omitNull(['email' => $email, 'userId' => $user_id]),
+            ['mailingLists' => $mailing_lists],
+            $properties
+        );
 
         return $this->client->query(method: 'PUT', endpoint: 'v1/contacts/update', options: [
             'json' => $payload
