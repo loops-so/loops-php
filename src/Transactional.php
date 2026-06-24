@@ -50,10 +50,15 @@ class Transactional
         ]);
     }
 
-    public function create(string $name): mixed
+    public function create(string $name, ?string $transactional_group_id = null): mixed
     {
+        $payload = ['name' => $name];
+        if ($transactional_group_id !== null) {
+            $payload['transactionalGroupId'] = $transactional_group_id;
+        }
+
         return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails', options: [
-            'json' => ['name' => $name]
+            'json' => $payload
         ]);
     }
 
@@ -62,10 +67,24 @@ class Transactional
         return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails/' . $transactional_id);
     }
 
-    public function update(string $transactional_id, string $name): mixed
-    {
+    public function update(
+        string $transactional_id,
+        ?string $name = null,
+        ?string $transactional_group_id = null
+    ): mixed {
+        $payload = [];
+        if ($name !== null) {
+            $payload['name'] = $name;
+        }
+        if ($transactional_group_id !== null) {
+            $payload['transactionalGroupId'] = $transactional_group_id;
+        }
+        if ($payload === []) {
+            throw new \InvalidArgumentException(message: 'At least one field must be provided.');
+        }
+
         return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $transactional_id, options: [
-            'json' => ['name' => $name]
+            'json' => $payload
         ]);
     }
 

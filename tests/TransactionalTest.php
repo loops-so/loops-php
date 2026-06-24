@@ -210,6 +210,28 @@ class TransactionalTest extends TestCase
     $this->assertEquals('msg_123', $result['draftEmailMessageId']);
   }
 
+  public function testCreateTransactionalWithGroup(): void
+  {
+    $groupId = 'grp_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/transactional-emails',
+        $this->callback(function ($options) use ($groupId) {
+          return $options['json']['name'] === 'Welcome email'
+            && $options['json']['transactionalGroupId'] === $groupId;
+        })
+      )
+      ->willReturn(new Response(status: 201, body: json_encode(['id' => 'txn_123'])));
+
+    $this->client->transactional->create(
+      name: 'Welcome email',
+      transactional_group_id: $groupId
+    );
+  }
+
   public function testGetTransactional(): void
   {
     $transactionalId = 'txn_123';
@@ -268,6 +290,37 @@ class TransactionalTest extends TestCase
     );
 
     $this->assertEquals('Updated welcome email', $result['name']);
+  }
+
+  public function testUpdateTransactionalGroup(): void
+  {
+    $transactionalId = 'txn_123';
+    $groupId = 'grp_456';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/transactional-emails/' . $transactionalId,
+        $this->callback(function ($options) use ($groupId) {
+          return $options['json']['transactionalGroupId'] === $groupId
+            && !isset($options['json']['name']);
+        })
+      )
+      ->willReturn(new Response(status: 200, body: json_encode(['id' => $transactionalId])));
+
+    $this->client->transactional->update(
+      transactional_id: $transactionalId,
+      transactional_group_id: $groupId
+    );
+  }
+
+  public function testUpdateTransactionalWithoutFieldsThrows(): void
+  {
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('At least one field must be provided.');
+
+    $this->client->transactional->update(transactional_id: 'txn_123');
   }
 
   public function testEnsureDraftTransactional(): void

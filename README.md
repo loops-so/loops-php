@@ -943,9 +943,10 @@ Create a new transactional email. An empty draft email message is created automa
 
 #### Parameters
 
-| Name    | Type   | Required | Notes                              |
-| ------- | ------ | -------- | ---------------------------------- |
-| `$name` | string | Yes      | The name of the transactional email. |
+| Name                       | Type   | Required | Notes                                                                                                                        |
+| -------------------------- | ------ | -------- | ---------------------------------------------------------------------------------------------------------------------------- |
+| `$name`                    | string | Yes      | The name of the transactional email.                                                                                         |
+| `$transactional_group_id`  | string | No       | The ID of the group to add this transactional email to. Defaults to the team's default group when omitted.                   |
 
 #### Example
 
@@ -992,16 +993,17 @@ $result = $loops->transactional->get(transactional_id: 'clfq6dinn000yl70fgwwyp82
 
 ### transactional->update()
 
-Update a transactional email's name.
+Update a transactional email.
 
 [API Reference](https://loops.so/docs/api-reference/update-transactional-email)
 
 #### Parameters
 
-| Name                | Type   | Required | Notes                            |
-| ------------------- | ------ | -------- | -------------------------------- |
-| `$transactional_id` | string | Yes      | The ID of the transactional email. |
-| `$name`             | string | Yes      | The updated name.                |
+| Name                       | Type   | Required | Notes                                                                                      |
+| -------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------ |
+| `$transactional_id`          | string | Yes      | The ID of the transactional email.                                                           |
+| `$name`                    | string | No       | The updated name. At least one of `$name` or `$transactional_group_id` must be provided.   |
+| `$transactional_group_id`  | string | No       | The ID of the group to move this transactional email to.                                   |
 
 #### Example
 
