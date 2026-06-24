@@ -37,16 +37,11 @@ class Transactional
 
     public function list(?int $per_page = null, ?string $cursor = null): mixed
     {
-        $query = [];
-        if ($per_page !== null) {
-            $query['perPage'] = $per_page;
-        }
-        if ($cursor) {
-            $query['cursor'] = $cursor;
-        }
-
         return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails', options: [
-            'query' => $query
+            'query' => Util::omitNull([
+                'perPage' => $per_page,
+                'cursor' => $cursor,
+            ])
         ]);
     }
 

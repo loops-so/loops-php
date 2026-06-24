@@ -26,12 +26,10 @@ class ContactProperties
     }
     public function list(?string $list = null): mixed
     {
-        $query = [];
-        if ($list) {
-            $query['list'] = $list;
-        }
         return $this->client->query(method: 'GET', endpoint: 'v1/contacts/properties', options: [
-            'query' => $query
+            'query' => Util::omitNull([
+                'list' => $list,
+            ])
         ]);
     }
 }

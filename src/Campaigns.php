@@ -15,16 +15,11 @@ class Campaigns
 
     public function list(?int $per_page = null, ?string $cursor = null): mixed
     {
-        $query = [];
-        if ($per_page !== null) {
-            $query['perPage'] = $per_page;
-        }
-        if ($cursor) {
-            $query['cursor'] = $cursor;
-        }
-
         return $this->client->query(method: 'GET', endpoint: 'v1/campaigns', options: [
-            'query' => $query
+            'query' => Util::omitNull([
+                'perPage' => $per_page,
+                'cursor' => $cursor,
+            ])
         ]);
     }
 
@@ -90,6 +85,9 @@ class Campaigns
         }
         if ($scheduling !== null) {
             $payload['scheduling'] = $scheduling;
+        }
+        if ($payload === []) {
+            throw new \InvalidArgumentException(message: 'At least one field must be provided.');
         }
 
         return $this->client->query(method: 'POST', endpoint: 'v1/campaigns/' . $campaign_id, options: [

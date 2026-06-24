@@ -1270,9 +1270,9 @@ Get a single campaign by ID.
 
 #### Parameters
 
-| Name                    | Type   | Required | Notes                 |
-| ----------------------- | ------ | -------- | --------------------- |
-| `$campaign_id`                 | string | Yes      | The ID of the campaign. |
+| Name           | Type   | Required | Notes                   |
+| -------------- | ------ | -------- | ----------------------- |
+| `$campaign_id` | string | Yes      | The ID of the campaign. |
 
 #### Example
 
@@ -1292,7 +1292,7 @@ Update a draft campaign's name, group, audience, or scheduling.
 
 | Name                    | Type   | Required | Notes                                                                                                 |
 | ----------------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------- |
-| `$campaign_id`                 | string | Yes      | The ID of the campaign.                                                                               |
+| `$campaign_id`          | string | Yes      | The ID of the campaign.                                                                               |
 | `$name`                 | string | No       | The updated name.                                                                                     |
 | `$campaign_group_id`    | string | No       | The ID of the group to move this campaign to.                                                         |
 | `$mailing_list_id`      | string | No       | The ID of the mailing list to send to.                                                                |
@@ -1539,7 +1539,7 @@ Update an email message's subject, preview text, sender, or LMX content.
 | Name      | Type  | Required | Notes                                                                                                                                                                                                 |
 | --------- | ----- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `$email_message_id` | string | Yes   | The ID of the email message.                                                                                                                                                                          |
-| `$fields` | array | No       | Fields to update. Use API field names: `expectedRevisionId`, `subject`, `previewText`, `fromName`, `fromEmail`, `replyToEmail`, `lmx`. Supply `expectedRevisionId` matching the current `contentRevisionId` to avoid 409 conflicts. |
+| `$fields` | array | No       | Fields to update. Use API field names: `expectedRevisionId`, `subject`, `previewText`, `fromName`, `fromEmail`, `replyToEmail`, `lmx`, `contactPropertiesFallbacks`, `eventPropertiesFallbacks`, `dataVariablesFallbacks`. Supply `expectedRevisionId` matching the current `contentRevisionId` to avoid 409 conflicts. For the `*Fallbacks` maps, a `null` value deletes an individual fallback entry. |
 
 #### Example
 
