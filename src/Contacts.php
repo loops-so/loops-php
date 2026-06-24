@@ -31,11 +31,16 @@ class Contacts
         if (!$email && !$user_id) {
             throw new \InvalidArgumentException(message: 'You must provide an email or user_id value.');
         }
-        $payload = [
-            'email' => $email,
-            'userId' => $user_id,
-            'mailingLists' => $mailing_lists
-        ];
+        $payload = [];
+        if ($email !== null) {
+            $payload['email'] = $email;
+        }
+        if ($user_id !== null) {
+            $payload['userId'] = $user_id;
+        }
+        if ($mailing_lists !== []) {
+            $payload['mailingLists'] = $mailing_lists;
+        }
         $payload = array_merge($payload, $properties);
 
         return $this->client->query(method: 'PUT', endpoint: 'v1/contacts/update', options: [
