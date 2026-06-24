@@ -7,6 +7,7 @@ class LoopsClient
   private const BASE_URI = 'https://app.loops.so/api/';
 
   private \GuzzleHttp\Client $httpClient;
+  private \GuzzleHttp\Client $uploadHttpClient;
   public ApiKey $apiKey;
   public Contacts $contacts;
   public Events $events;
@@ -33,6 +34,10 @@ class LoopsClient
         'Content-Type' => 'application/json',
       ],
       'http_errors' => false
+    ]);
+
+    $this->uploadHttpClient = new \GuzzleHttp\Client(config: [
+      'http_errors' => false,
     ]);
 
     $this->apiKey = new ApiKey(client: $this);
@@ -67,6 +72,22 @@ class LoopsClient
   public function getHttpClient(): \GuzzleHttp\Client
   {
     return $this->httpClient;
+  }
+
+  /**
+   * Sets the HTTP client used for pre-signed upload URLs. Primarily for testing.
+   *
+   * @param \GuzzleHttp\Client $client
+   * @return void
+   */
+  public function setUploadHttpClient(\GuzzleHttp\Client $client): void
+  {
+    $this->uploadHttpClient = $client;
+  }
+
+  public function getUploadHttpClient(): \GuzzleHttp\Client
+  {
+    return $this->uploadHttpClient;
   }
 
   /**

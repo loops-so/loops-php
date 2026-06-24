@@ -59,7 +59,7 @@ class Uploads
             ]
         ]);
 
-        $response = $this->client->getHttpClient()->put($created['presignedUrl'], [
+        $response = $this->client->getUploadHttpClient()->put($created['presignedUrl'], [
             'headers' => [
                 'Content-Type' => $content_type,
                 'Content-Length' => (string) $content_length,

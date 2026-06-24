@@ -10,13 +10,16 @@ class UploadsTest extends TestCase
 {
   private LoopsClient $client;
   private \GuzzleHttp\Client $mockHttpClient;
+  private \GuzzleHttp\Client $mockUploadHttpClient;
   private string $imagePath;
 
   protected function setUp(): void
   {
     $this->mockHttpClient = $this->createMock(\GuzzleHttp\Client::class);
+    $this->mockUploadHttpClient = $this->createMock(\GuzzleHttp\Client::class);
     $this->client = new LoopsClient('test_api_key');
     $this->client->setHttpClient($this->mockHttpClient);
+    $this->client->setUploadHttpClient($this->mockUploadHttpClient);
 
     $this->imagePath = sys_get_temp_dir() . '/loops_upload_test.png';
     file_put_contents(
@@ -69,13 +72,14 @@ class UploadsTest extends TestCase
         $this->fail('Unexpected POST endpoint: ' . $endpoint);
       });
 
-    $this->mockHttpClient
+    $this->mockUploadHttpClient
       ->expects($this->once())
       ->method('put')
       ->with(
         $presignedUrl,
         $this->callback(function ($options) use ($fileContents, $contentLength) {
-          return $options['headers']['Content-Type'] === 'image/png'
+          return !isset($options['headers']['Authorization'])
+            && $options['headers']['Content-Type'] === 'image/png'
             && $options['headers']['Content-Length'] === (string) $contentLength
             && $options['body'] === $fileContents;
         })
