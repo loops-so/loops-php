@@ -1,4 +1,4 @@
-## v4.0.0 - Jun 24, 2026
+## v3.1.0 - Jun 24, 2026
 
 Added support for new content endpoints:
 
