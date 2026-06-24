@@ -782,7 +782,7 @@ Send a transactional email to a contact. [Learn about sending transactional emai
 | `$data_variables`                | array   | No       | An array containing data as defined by the data variables added to the transactional email template.<br />Values can be of type `string` or `number`.                                            |
 | `$attachments`                   | array[] | No       | A list of attachments objects.<br />**Please note**: Attachments need to be enabled on your account before using them with the API. [Read more](https://loops.so/docs/transactional/attachments) |
 | `$attachments[]["filename"]`     | string  | No       | The name of the file, shown in email clients.                                                                                                                                                    |
-| `$attachments[]["content_type"]` | string  | No       | The MIME type of the file.                                                                                                                                                                       |
+| `$attachments[]["contentType"]` | string  | No       | The MIME type of the file.                                                                                                                                                                       |
 | `$attachments[]["data"]`         | string  | No       | The base64-encoded content of the file.                                                                                                                                                          |
 | `$headers`                       | array   | No       | Additional headers to send with the request.                                                                                                                                                     |
 
@@ -819,7 +819,7 @@ $result = $loops->transactional->send(
   attachments: [
     [
       'filename' => 'presentation.pdf',
-      'content_type' => 'application/pdf',
+      'contentType' => 'application/pdf',
       'data' => base64_encode(file_get_contents('path/to/presentation.pdf'))
     ]
   ]

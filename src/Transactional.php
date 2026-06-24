@@ -18,7 +18,7 @@ class Transactional
         string $email,
         ?bool $add_to_audience = false,
         ?array $data_variables = [],
-        ?array $attachments = [], /** @var array<array{filename: string, content_type: string, data: string}> */
+        ?array $attachments = [], /** @var array<array{filename: string, contentType: string, data: string}> */
         ?array $headers = []
     ): mixed {
         $payload = [
