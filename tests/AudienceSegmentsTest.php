@@ -6,7 +6,7 @@ use Loops\LoopsClient;
 use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Psr7\Response;
 
-class ComponentsTest extends TestCase
+class AudienceSegmentsTest extends TestCase
 {
   private LoopsClient $client;
   private \GuzzleHttp\Client $mockHttpClient;
@@ -18,48 +18,49 @@ class ComponentsTest extends TestCase
     $this->client->setHttpClient($this->mockHttpClient);
   }
 
-  public function testListComponents(): void
+  public function testListAudienceSegments(): void
   {
     $this->mockHttpClient
       ->expects($this->once())
       ->method('get')
-      ->with('v1/components', $this->callback(function ($options) {
-        return $options['query'] === [];
-      }))
+      ->with(
+        'v1/audience-segments',
+        $this->callback(function ($options) {
+          return $options['query']['perPage'] === 20
+            && $options['query']['cursor'] === 'cursor123';
+        })
+      )
       ->willReturn(new Response(
         status: 200,
         body: json_encode([
-          'success' => true,
           'pagination' => ['nextCursor' => null],
           'data' => []
         ])
       ));
 
-    $result = $this->client->components->list();
+    $result = $this->client->audienceSegments->list(per_page: 20, cursor: 'cursor123');
 
-    $this->assertTrue($result['success']);
+    $this->assertEquals([], $result['data']);
   }
 
-  public function testFindComponent(): void
+  public function testGetAudienceSegment(): void
   {
-    $componentId = 'component_abc123';
+    $segmentId = 'seg_123';
 
     $this->mockHttpClient
       ->expects($this->once())
       ->method('get')
-      ->with('v1/components/' . $componentId)
+      ->with('v1/audience-segments/' . $segmentId)
       ->willReturn(new Response(
         status: 200,
         body: json_encode([
-          'success' => true,
-          'componentId' => $componentId,
-          'name' => 'Header',
-          'lmx' => '<Section />'
+          'id' => $segmentId,
+          'name' => 'Active subscribers'
         ])
       ));
 
-    $result = $this->client->components->get(id: $componentId);
+    $result = $this->client->audienceSegments->get(id: $segmentId);
 
-    $this->assertEquals($componentId, $result['componentId']);
+    $this->assertEquals($segmentId, $result['id']);
   }
 }

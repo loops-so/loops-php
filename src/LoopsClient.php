@@ -17,8 +17,12 @@ class LoopsClient
   public Themes $themes;
   public Components $components;
   public Campaigns $campaigns;
+  public CampaignGroups $campaignGroups;
   public EmailMessages $emailMessages;
   public Uploads $uploads;
+  public AudienceSegments $audienceSegments;
+  public Workflows $workflows;
+  public TransactionalGroups $transactionalGroups;
 
   public function __construct(string $api_key)
   {
@@ -41,8 +45,12 @@ class LoopsClient
     $this->themes = new Themes(client: $this);
     $this->components = new Components(client: $this);
     $this->campaigns = new Campaigns(client: $this);
+    $this->campaignGroups = new CampaignGroups(client: $this);
     $this->emailMessages = new EmailMessages(client: $this);
     $this->uploads = new Uploads(client: $this);
+    $this->audienceSegments = new AudienceSegments(client: $this);
+    $this->workflows = new Workflows(client: $this);
+    $this->transactionalGroups = new TransactionalGroups(client: $this);
   }
 
   /**

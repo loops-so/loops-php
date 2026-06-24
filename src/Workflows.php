@@ -4,7 +4,7 @@ namespace Loops;
 
 use Loops\LoopsClient;
 
-class Components
+class Workflows
 {
     private $client;
 
@@ -23,13 +23,18 @@ class Components
             $query['cursor'] = $cursor;
         }
 
-        return $this->client->query(method: 'GET', endpoint: 'v1/components', options: [
+        return $this->client->query(method: 'GET', endpoint: 'v1/workflows', options: [
             'query' => $query
         ]);
     }
 
     public function get(string $id): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/components/' . $id);
+        return $this->client->query(method: 'GET', endpoint: 'v1/workflows/' . $id);
+    }
+
+    public function getNode(string $workflow_id, string $node_id): mixed
+    {
+        return $this->client->query(method: 'GET', endpoint: 'v1/workflows/' . $workflow_id . '/nodes/' . $node_id);
     }
 }

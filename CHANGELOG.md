@@ -1,9 +1,16 @@
-## v3.1.0 - Jun 10, 2026
+## v4.0.0 - Jun 24, 2026
 
-Added support for image uploads and transactional email content management.
+Added support for new content endpoints:
 
 - `uploads->upload()` for uploading images.
 - `transactional->create()`, `transactional->get()`, `transactional->update()`, `transactional->ensureDraft()`, and `transactional->publish()` for managing transactional emails.
+- `audienceSegments->list()` and `audienceSegments->get()` for audience segments.
+- `workflows->list()`, `workflows->get()`, and `workflows->getNode()` for reading workflows.
+- `campaignGroups->list()`, `campaignGroups->create()`, `campaignGroups->get()`, and `campaignGroups->update()` for campaign groups.
+- `transactionalGroups->list()`, `transactionalGroups->create()`, `transactionalGroups->get()`, and `transactionalGroups->update()` for transactional groups.
+- `emailMessages->preview()` for sending test email previews.
+- Extended `campaigns->create()` and `campaigns->update()` with audience, group, and scheduling fields.
+- Renamed primary resource ID parameters to `id` (for example, `transactional->get(id: '...')` instead of `transactional_id:`).
 
 ## v3.0.0 - May 19, 2026
 

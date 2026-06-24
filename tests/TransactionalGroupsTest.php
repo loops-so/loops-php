@@ -6,7 +6,7 @@ use Loops\LoopsClient;
 use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Psr7\Response;
 
-class ComponentsTest extends TestCase
+class TransactionalGroupsTest extends TestCase
 {
   private LoopsClient $client;
   private \GuzzleHttp\Client $mockHttpClient;
@@ -18,48 +18,40 @@ class ComponentsTest extends TestCase
     $this->client->setHttpClient($this->mockHttpClient);
   }
 
-  public function testListComponents(): void
+  public function testListTransactionalGroups(): void
   {
     $this->mockHttpClient
       ->expects($this->once())
       ->method('get')
-      ->with('v1/components', $this->callback(function ($options) {
-        return $options['query'] === [];
-      }))
+      ->with('v1/transactional-groups')
       ->willReturn(new Response(
         status: 200,
         body: json_encode([
-          'success' => true,
           'pagination' => ['nextCursor' => null],
           'data' => []
         ])
       ));
 
-    $result = $this->client->components->list();
+    $result = $this->client->transactionalGroups->list();
 
-    $this->assertTrue($result['success']);
+    $this->assertEquals([], $result['data']);
   }
 
-  public function testFindComponent(): void
+  public function testGetTransactionalGroup(): void
   {
-    $componentId = 'component_abc123';
+    $groupId = 'tgrp_123';
 
     $this->mockHttpClient
       ->expects($this->once())
       ->method('get')
-      ->with('v1/components/' . $componentId)
+      ->with('v1/transactional-groups/' . $groupId)
       ->willReturn(new Response(
         status: 200,
-        body: json_encode([
-          'success' => true,
-          'componentId' => $componentId,
-          'name' => 'Header',
-          'lmx' => '<Section />'
-        ])
+        body: json_encode(['id' => $groupId, 'name' => 'Onboarding'])
       ));
 
-    $result = $this->client->components->get(id: $componentId);
+    $result = $this->client->transactionalGroups->get(id: $groupId);
 
-    $this->assertEquals($componentId, $result['componentId']);
+    $this->assertEquals($groupId, $result['id']);
   }
 }

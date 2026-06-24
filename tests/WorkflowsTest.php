@@ -6,7 +6,7 @@ use Loops\LoopsClient;
 use PHPUnit\Framework\TestCase;
 use GuzzleHttp\Psr7\Response;
 
-class ComponentsTest extends TestCase
+class WorkflowsTest extends TestCase
 {
   private LoopsClient $client;
   private \GuzzleHttp\Client $mockHttpClient;
@@ -18,48 +18,44 @@ class ComponentsTest extends TestCase
     $this->client->setHttpClient($this->mockHttpClient);
   }
 
-  public function testListComponents(): void
+  public function testListWorkflows(): void
   {
     $this->mockHttpClient
       ->expects($this->once())
       ->method('get')
-      ->with('v1/components', $this->callback(function ($options) {
-        return $options['query'] === [];
-      }))
+      ->with('v1/workflows')
       ->willReturn(new Response(
         status: 200,
         body: json_encode([
-          'success' => true,
           'pagination' => ['nextCursor' => null],
           'data' => []
         ])
       ));
 
-    $result = $this->client->components->list();
+    $result = $this->client->workflows->list();
 
-    $this->assertTrue($result['success']);
+    $this->assertEquals([], $result['data']);
   }
 
-  public function testFindComponent(): void
+  public function testGetWorkflowNode(): void
   {
-    $componentId = 'component_abc123';
+    $workflowId = 'wf_123';
+    $nodeId = 'node_456';
 
     $this->mockHttpClient
       ->expects($this->once())
       ->method('get')
-      ->with('v1/components/' . $componentId)
+      ->with('v1/workflows/' . $workflowId . '/nodes/' . $nodeId)
       ->willReturn(new Response(
         status: 200,
         body: json_encode([
-          'success' => true,
-          'componentId' => $componentId,
-          'name' => 'Header',
-          'lmx' => '<Section />'
+          'id' => $nodeId,
+          'type' => 'email'
         ])
       ));
 
-    $result = $this->client->components->get(id: $componentId);
+    $result = $this->client->workflows->getNode(workflow_id: $workflowId, node_id: $nodeId);
 
-    $this->assertEquals($componentId, $result['componentId']);
+    $this->assertEquals($nodeId, $result['id']);
   }
 }

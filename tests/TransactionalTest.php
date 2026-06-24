@@ -29,7 +29,7 @@ class TransactionalTest extends TestCase
 
   public function testSendTransactional(): void
   {
-    $transactional_id = 'test_template_123';
+    $id = 'test_template_123';
     $email = 'test@example.com';
     $add_to_audience = true;
     $data_variables = ['name' => 'Test User'];
@@ -48,7 +48,7 @@ class TransactionalTest extends TestCase
       ->method('post')
       ->with(
         'v1/transactional',
-        $this->callback(function ($options) use ($transactional_id, $email, $add_to_audience, $data_variables, $attachments, $custom_headers) {
+        $this->callback(function ($options) use ($id, $email, $add_to_audience, $data_variables, $attachments, $custom_headers) {
           // Verify the request structure
           if (!isset($options['json']) || !isset($options['headers'])) {
             return false;
@@ -68,7 +68,7 @@ class TransactionalTest extends TestCase
             && isset($payload['attachments']);
 
           // Verify payload values
-          $has_correct_values = $payload['transactionalId'] === $transactional_id
+          $has_correct_values = $payload['transactionalId'] === $id
             && $payload['email'] === $email
             && $payload['addToAudience'] === $add_to_audience
             && $payload['dataVariables'] === $data_variables
@@ -89,7 +89,7 @@ class TransactionalTest extends TestCase
 
     // Make the API call
     $result = $this->client->transactional->send(
-      transactional_id: $transactional_id,
+      id: $id,
       email: $email,
       add_to_audience: $add_to_audience,
       data_variables: $data_variables,
@@ -231,7 +231,7 @@ class TransactionalTest extends TestCase
         ])
       ));
 
-    $result = $this->client->transactional->get(transactional_id: $transactionalId);
+    $result = $this->client->transactional->get(id: $transactionalId);
 
     $this->assertEquals($transactionalId, $result['id']);
   }
@@ -263,7 +263,7 @@ class TransactionalTest extends TestCase
       ));
 
     $result = $this->client->transactional->update(
-      transactional_id: $transactionalId,
+      id: $transactionalId,
       name: 'Updated welcome email'
     );
 
@@ -292,7 +292,7 @@ class TransactionalTest extends TestCase
         ])
       ));
 
-    $result = $this->client->transactional->ensureDraft(transactional_id: $transactionalId);
+    $result = $this->client->transactional->ensureDraft(id: $transactionalId);
 
     $this->assertEquals('msg_123', $result['draftEmailMessageId']);
   }
@@ -318,7 +318,7 @@ class TransactionalTest extends TestCase
         ])
       ));
 
-    $result = $this->client->transactional->publish(transactional_id: $transactionalId);
+    $result = $this->client->transactional->publish(id: $transactionalId);
 
     $this->assertEquals('msg_123', $result['publishedEmailMessageId']);
   }

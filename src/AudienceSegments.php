@@ -4,7 +4,7 @@ namespace Loops;
 
 use Loops\LoopsClient;
 
-class Components
+class AudienceSegments
 {
     private $client;
 
@@ -23,13 +23,13 @@ class Components
             $query['cursor'] = $cursor;
         }
 
-        return $this->client->query(method: 'GET', endpoint: 'v1/components', options: [
+        return $this->client->query(method: 'GET', endpoint: 'v1/audience-segments', options: [
             'query' => $query
         ]);
     }
 
     public function get(string $id): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/components/' . $id);
+        return $this->client->query(method: 'GET', endpoint: 'v1/audience-segments/' . $id);
     }
 }

@@ -14,7 +14,7 @@ class Transactional
     }
 
     public function send(
-        string $transactional_id,
+        string $id,
         string $email,
         ?bool $add_to_audience = false,
         ?array $data_variables = [],
@@ -22,7 +22,7 @@ class Transactional
         ?array $headers = []
     ): mixed {
         $payload = [
-            'transactionalId' => $transactional_id,
+            'transactionalId' => $id,
             'email' => $email,
             'addToAudience' => $add_to_audience,
             'dataVariables' => $data_variables,
@@ -57,25 +57,25 @@ class Transactional
         ]);
     }
 
-    public function get(string $transactional_id): mixed
+    public function get(string $id): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails/' . $transactional_id);
+        return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails/' . $id);
     }
 
-    public function update(string $transactional_id, string $name): mixed
+    public function update(string $id, string $name): mixed
     {
-        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $transactional_id, options: [
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $id, options: [
             'json' => ['name' => $name]
         ]);
     }
 
-    public function ensureDraft(string $transactional_id): mixed
+    public function ensureDraft(string $id): mixed
     {
-        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $transactional_id . '/draft');
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $id . '/draft');
     }
 
-    public function publish(string $transactional_id): mixed
+    public function publish(string $id): mixed
     {
-        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $transactional_id . '/publish');
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $id . '/publish');
     }
 }
