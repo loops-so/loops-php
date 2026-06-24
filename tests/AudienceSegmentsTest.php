@@ -59,7 +59,7 @@ class AudienceSegmentsTest extends TestCase
         ])
       ));
 
-    $result = $this->client->audienceSegments->get(id: $segmentId);
+    $result = $this->client->audienceSegments->get(audience_segment_id: $segmentId);
 
     $this->assertEquals($segmentId, $result['id']);
   }

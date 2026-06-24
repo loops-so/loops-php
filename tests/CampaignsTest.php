@@ -89,7 +89,7 @@ class CampaignsTest extends TestCase
         ])
       ));
 
-    $result = $this->client->campaigns->get(id: $campaignId);
+    $result = $this->client->campaigns->get(campaign_id: $campaignId);
 
     $this->assertEquals($campaignId, $result['campaignId']);
   }
@@ -121,7 +121,7 @@ class CampaignsTest extends TestCase
       ));
 
     $result = $this->client->campaigns->update(
-      id: $campaignId,
+      campaign_id: $campaignId,
       name: 'Updated name'
     );
 

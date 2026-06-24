@@ -28,8 +28,8 @@ class Themes
         ]);
     }
 
-    public function get(string $id): mixed
+    public function get(string $theme_id): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/themes/' . $id);
+        return $this->client->query(method: 'GET', endpoint: 'v1/themes/' . $theme_id);
     }
 }

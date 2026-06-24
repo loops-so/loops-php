@@ -43,7 +43,7 @@ class EmailMessagesTest extends TestCase
         ])
       ));
 
-    $result = $this->client->emailMessages->get(id: $emailMessageId);
+    $result = $this->client->emailMessages->get(email_message_id: $emailMessageId);
 
     $this->assertEquals($emailMessageId, $result['emailMessageId']);
   }
@@ -84,7 +84,7 @@ class EmailMessagesTest extends TestCase
       ));
 
     $result = $this->client->emailMessages->update(
-      id: $emailMessageId,
+      email_message_id: $emailMessageId,
       fields: $fields
     );
 
@@ -115,7 +115,7 @@ class EmailMessagesTest extends TestCase
       ));
 
     $result = $this->client->emailMessages->preview(
-      id: $emailMessageId,
+      email_message_id: $emailMessageId,
       emails: ['test@example.com'],
       contact_properties: ['firstName' => 'Ada']
     );

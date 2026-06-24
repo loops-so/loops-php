@@ -59,7 +59,7 @@ class CampaignGroupsTest extends TestCase
       ));
 
     $result = $this->client->campaignGroups->update(
-      id: $groupId,
+      campaign_group_id: $groupId,
       name: 'Updated name'
     );
 

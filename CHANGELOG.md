@@ -10,7 +10,6 @@ Added support for new content endpoints:
 - `transactionalGroups->list()`, `transactionalGroups->create()`, `transactionalGroups->get()`, and `transactionalGroups->update()` for transactional groups.
 - `emailMessages->preview()` for sending test email previews.
 - Extended `campaigns->create()` and `campaigns->update()` with audience, group, and scheduling fields.
-- Renamed primary resource ID parameters to `id` (for example, `transactional->get(id: '...')` instead of `transactional_id:`).
 
 ## v3.0.0 - May 19, 2026
 

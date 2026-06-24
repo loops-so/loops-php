@@ -776,7 +776,7 @@ Send a transactional email to a contact. [Learn about sending transactional emai
 
 | Name                             | Type    | Required | Notes                                                                                                                                                                                            |
 | -------------------------------- | ------- | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| `$id`                             | string  | Yes      | The ID of the transactional email to send.                                                                                                                                                       |
+| `$transactional_id`              | string  | Yes      | The ID of the transactional email to send.                                                                                                                                                       |
 | `$email`                         | string  | Yes      | The email address of the recipient.                                                                                                                                                              |
 | `$add_to_audience`               | boolean | No       | If `true`, a contact will be created in your audience using the `$email` value (if a matching contact doesn’t already exist).                                                                    |
 | `$data_variables`                | array   | No       | An array containing data as defined by the data variables added to the transactional email template.<br />Values can be of type `string` or `number`.                                            |
@@ -790,7 +790,7 @@ Send a transactional email to a contact. [Learn about sending transactional emai
 
 ```php
 $result = $loops->transactional->send(
-  id: 'clfq6dinn000yl70fgwwyp82l',
+  transactional_id: 'clfq6dinn000yl70fgwwyp82l',
   email: 'hello@gmail.com',
   data_variables: [
     'loginUrl' => 'https://myapp.com/login/',
@@ -799,7 +799,7 @@ $result = $loops->transactional->send(
 
 # Example with Idempotency-Key header
 $result = $loops->transactional->send(
-  id: 'clfq6dinn000yl70fgwwyp82l',
+  transactional_id: 'clfq6dinn000yl70fgwwyp82l',
   email: 'hello@gmail.com',
   data_variables: [
     'loginUrl' => 'https://myapp.com/login/',
@@ -811,7 +811,7 @@ $result = $loops->transactional->send(
 
 # Please contact us to enable attachments on your account.
 $result = $loops->transactional->send(
-  id: 'clfq6dinn000yl70fgwwyp82l',
+  transactional_id: 'clfq6dinn000yl70fgwwyp82l',
   email: 'hello@gmail.com',
   data_variables: [
     'loginUrl' => 'https://myapp.com/login/',
@@ -980,12 +980,12 @@ Get a single transactional email by ID.
 
 | Name                | Type   | Required | Notes                            |
 | ------------------- | ------ | -------- | -------------------------------- |
-| `$id` | string | Yes      | The ID of the transactional email. |
+| `$transactional_id` | string | Yes      | The ID of the transactional email. |
 
 #### Example
 
 ```php
-$result = $loops->transactional->get(id: 'clfq6dinn000yl70fgwwyp82l');
+$result = $loops->transactional->get(transactional_id: 'clfq6dinn000yl70fgwwyp82l');
 ```
 
 ---
@@ -1000,14 +1000,14 @@ Update a transactional email's name.
 
 | Name                | Type   | Required | Notes                            |
 | ------------------- | ------ | -------- | -------------------------------- |
-| `$id` | string | Yes      | The ID of the transactional email. |
+| `$transactional_id` | string | Yes      | The ID of the transactional email. |
 | `$name`             | string | Yes      | The updated name.                |
 
 #### Example
 
 ```php
 $result = $loops->transactional->update(
-  id: 'clfq6dinn000yl70fgwwyp82l',
+  transactional_id: 'clfq6dinn000yl70fgwwyp82l',
   name: 'Updated welcome email'
 );
 ```
@@ -1024,12 +1024,12 @@ Ensure a transactional email has a draft email message. If a draft already exist
 
 | Name                | Type   | Required | Notes                            |
 | ------------------- | ------ | -------- | -------------------------------- |
-| `$id` | string | Yes      | The ID of the transactional email. |
+| `$transactional_id` | string | Yes      | The ID of the transactional email. |
 
 #### Example
 
 ```php
-$result = $loops->transactional->ensureDraft(id: 'clfq6dinn000yl70fgwwyp82l');
+$result = $loops->transactional->ensureDraft(transactional_id: 'clfq6dinn000yl70fgwwyp82l');
 ```
 
 ---
@@ -1044,12 +1044,12 @@ Publish the transactional email's current draft email message.
 
 | Name                | Type   | Required | Notes                            |
 | ------------------- | ------ | -------- | -------------------------------- |
-| `$id` | string | Yes      | The ID of the transactional email. |
+| `$transactional_id` | string | Yes      | The ID of the transactional email. |
 
 #### Example
 
 ```php
-$result = $loops->transactional->publish(id: 'clfq6dinn000yl70fgwwyp82l');
+$result = $loops->transactional->publish(transactional_id: 'clfq6dinn000yl70fgwwyp82l');
 ```
 
 ---
@@ -1142,12 +1142,12 @@ Get a single email theme by ID.
 
 | Name        | Type   | Required | Notes              |
 | ----------- | ------ | -------- | ------------------ |
-| `$id` | string | Yes      | The ID of the theme. |
+| `$theme_id` | string | Yes      | The ID of the theme. |
 
 #### Example
 
 ```php
-$result = $loops->themes->get(id: 'clo5p8q0r0132ntx6flkunw89');
+$result = $loops->themes->get(theme_id: 'clo5p8q0r0132ntx6flkunw89');
 ```
 
 ---
@@ -1183,12 +1183,12 @@ Get a single email component by ID.
 
 | Name            | Type   | Required | Notes                   |
 | --------------- | ------ | -------- | ----------------------- |
-| `$id` | string | Yes      | The ID of the component. |
+| `$component_id` | string | Yes      | The ID of the component. |
 
 #### Example
 
 ```php
-$result = $loops->components->get(id: 'clp6q9r1s0154ouy7gmlovx90');
+$result = $loops->components->get(component_id: 'clp6q9r1s0154ouy7gmlovx90');
 ```
 
 ---
@@ -1270,12 +1270,12 @@ Get a single campaign by ID.
 
 | Name                    | Type   | Required | Notes                 |
 | ----------------------- | ------ | -------- | --------------------- |
-| `$id`                   | string | Yes      | The ID of the campaign. |
+| `$campaign_id`                 | string | Yes      | The ID of the campaign. |
 
 #### Example
 
 ```php
-$result = $loops->campaigns->get(id: 'cln4o7p9q0110msw5ekjtmv78');
+$result = $loops->campaigns->get(campaign_id: 'cln4o7p9q0110msw5ekjtmv78');
 ```
 
 ---
@@ -1290,7 +1290,7 @@ Update a draft campaign's name, group, audience, or scheduling.
 
 | Name                    | Type   | Required | Notes                                                                                                 |
 | ----------------------- | ------ | -------- | ----------------------------------------------------------------------------------------------------- |
-| `$id`                   | string | Yes      | The ID of the campaign.                                                                               |
+| `$campaign_id`                 | string | Yes      | The ID of the campaign.                                                                               |
 | `$name`                 | string | No       | The updated name.                                                                                     |
 | `$campaign_group_id`    | string | No       | The ID of the group to move this campaign to.                                                         |
 | `$mailing_list_id`      | string | No       | The ID of the mailing list to send to.                                                                |
@@ -1304,7 +1304,7 @@ At least one field must be provided.
 
 ```php
 $result = $loops->campaigns->update(
-  id: 'cln4o7p9q0110msw5ekjtmv78',
+  campaign_id: 'cln4o7p9q0110msw5ekjtmv78',
   name: 'Updated name'
 );
 ```
@@ -1363,12 +1363,12 @@ Get a campaign group by ID.
 
 | Name  | Type   | Required | Notes                        |
 | ----- | ------ | -------- | ---------------------------- |
-| `$id` | string | Yes      | The ID of the campaign group. |
+| `$campaign_group_id` | string | Yes      | The ID of the campaign group. |
 
 #### Example
 
 ```php
-$result = $loops->campaignGroups->get(id: 'clq7r0s2t0176pvz8hnmpwy01');
+$result = $loops->campaignGroups->get(campaign_group_id: 'clq7r0s2t0176pvz8hnmpwy01');
 ```
 
 ---
@@ -1383,7 +1383,7 @@ Update a campaign group's name or description.
 
 | Name            | Type   | Required | Notes                                   |
 | --------------- | ------ | -------- | --------------------------------------- |
-| `$id`           | string | Yes      | The ID of the campaign group.           |
+| `$campaign_group_id` | string | Yes      | The ID of the campaign group.           |
 | `$name`         | string | No       | Cannot be the reserved name "Unsorted". |
 | `$description`  | string | No       |                                         |
 
@@ -1393,7 +1393,7 @@ At least one field must be provided.
 
 ```php
 $result = $loops->campaignGroups->update(
-  id: 'clq7r0s2t0176pvz8hnmpwy01',
+  campaign_group_id: 'clq7r0s2t0176pvz8hnmpwy01',
   name: 'Updated name'
 );
 ```
@@ -1431,12 +1431,12 @@ Get an audience segment by ID.
 
 | Name  | Type   | Required | Notes                           |
 | ----- | ------ | -------- | ------------------------------- |
-| `$id` | string | Yes      | The ID of the audience segment. |
+| `$audience_segment_id` | string | Yes      | The ID of the audience segment. |
 
 #### Example
 
 ```php
-$result = $loops->audienceSegments->get(id: 'clr8s1t3u0198qw09iotqzx12');
+$result = $loops->audienceSegments->get(audience_segment_id: 'clr8s1t3u0198qw09iotqzx12');
 ```
 
 ---
@@ -1472,12 +1472,12 @@ Get a simplified workflow graph.
 
 | Name  | Type   | Required | Notes                  |
 | ----- | ------ | -------- | ---------------------- |
-| `$id` | string | Yes      | The ID of the workflow. |
+| `$workflow_id` | string | Yes      | The ID of the workflow. |
 
 #### Example
 
 ```php
-$result = $loops->workflows->get(id: 'cls9t2u4v0210rx20jpuary23');
+$result = $loops->workflows->get(workflow_id: 'cls9t2u4v0210rx20jpuary23');
 ```
 
 ---
@@ -1516,12 +1516,12 @@ Get an email message, including its compiled LMX content.
 
 | Name      | Type   | Required | Notes                       |
 | --------- | ------ | -------- | --------------------------- |
-| `$id`     | string | Yes      | The ID of the email message. |
+| `$email_message_id` | string | Yes      | The ID of the email message. |
 
 #### Example
 
 ```php
-$result = $loops->emailMessages->get(id: 'cly8k3m0n0044jpx2bghepq45');
+$result = $loops->emailMessages->get(email_message_id: 'cly8k3m0n0044jpx2bghepq45');
 ```
 
 ---
@@ -1536,14 +1536,14 @@ Update an email message's subject, preview text, sender, or LMX content.
 
 | Name      | Type  | Required | Notes                                                                                                                                                                                                 |
 | --------- | ----- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `$id`     | string | Yes   | The ID of the email message.                                                                                                                                                                          |
+| `$email_message_id` | string | Yes   | The ID of the email message.                                                                                                                                                                          |
 | `$fields` | array | No       | Fields to update. Use API field names: `expectedRevisionId`, `subject`, `previewText`, `fromName`, `fromEmail`, `replyToEmail`, `lmx`. Supply `expectedRevisionId` matching the current `contentRevisionId` to avoid 409 conflicts. |
 
 #### Example
 
 ```php
 $result = $loops->emailMessages->update(
-  id: 'cly8k3m0n0044jpx2bghepq45',
+  email_message_id: 'cly8k3m0n0044jpx2bghepq45',
   fields: [
     'expectedRevisionId' => 'clm9n4o6p0088lrz4dijslt67',
     'subject' => 'Updated subject',
@@ -1564,7 +1564,7 @@ Send a test preview of an email message to one or more addresses.
 
 | Name                   | Type     | Required | Notes                                                                             |
 | ---------------------- | -------- | -------- | --------------------------------------------------------------------------------- |
-| `$id`                  | string   | Yes      | The ID of the email message.                                                      |
+| `$email_message_id`    | string   | Yes      | The ID of the email message.                                                      |
 | `$emails`              | array    | Yes      | One or more addresses to send the preview to.                                     |
 | `$contact_properties`  | array    | No       | Contact property values to render. Accepted for campaign and workflow previews.   |
 | `$event_properties`    | array    | No       | Event property values to render. Accepted for workflow previews only.             |
@@ -1574,7 +1574,7 @@ Send a test preview of an email message to one or more addresses.
 
 ```php
 $result = $loops->emailMessages->preview(
-  id: 'cly8k3m0n0044jpx2bghepq45',
+  email_message_id: 'cly8k3m0n0044jpx2bghepq45',
   emails: ['test@example.com'],
   contact_properties: ['firstName' => 'Alex']
 );
@@ -1634,12 +1634,12 @@ Get a transactional group by ID.
 
 | Name  | Type   | Required | Notes                             |
 | ----- | ------ | -------- | --------------------------------- |
-| `$id` | string | Yes      | The ID of the transactional group. |
+| `$transactional_group_id` | string | Yes      | The ID of the transactional group. |
 
 #### Example
 
 ```php
-$result = $loops->transactionalGroups->get(id: 'clv2w3x4y0288xbb0kqrsuv67');
+$result = $loops->transactionalGroups->get(transactional_group_id: 'clv2w3x4y0288xbb0kqrsuv67');
 ```
 
 ---
@@ -1654,7 +1654,7 @@ Update a transactional group's name or description.
 
 | Name            | Type   | Required | Notes                                   |
 | --------------- | ------ | -------- | --------------------------------------- |
-| `$id`           | string | Yes      | The ID of the transactional group.      |
+| `$transactional_group_id` | string | Yes      | The ID of the transactional group.      |
 | `$name`         | string | No       | Cannot be the reserved name "Unsorted". |
 | `$description`  | string | No       |                                         |
 
@@ -1664,7 +1664,7 @@ At least one field must be provided.
 
 ```php
 $result = $loops->transactionalGroups->update(
-  id: 'clv2w3x4y0288xbb0kqrsuv67',
+  transactional_group_id: 'clv2w3x4y0288xbb0kqrsuv67',
   name: 'Updated name'
 );
 ```

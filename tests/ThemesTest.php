@@ -65,7 +65,7 @@ class ThemesTest extends TestCase
         ])
       ));
 
-    $result = $this->client->themes->get(id: $themeId);
+    $result = $this->client->themes->get(theme_id: $themeId);
 
     $this->assertEquals($themeId, $result['themeId']);
   }

@@ -58,7 +58,7 @@ class ComponentsTest extends TestCase
         ])
       ));
 
-    $result = $this->client->components->get(id: $componentId);
+    $result = $this->client->components->get(component_id: $componentId);
 
     $this->assertEquals($componentId, $result['componentId']);
   }

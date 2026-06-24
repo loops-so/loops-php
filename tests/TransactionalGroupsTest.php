@@ -50,7 +50,7 @@ class TransactionalGroupsTest extends TestCase
         body: json_encode(['id' => $groupId, 'name' => 'Onboarding'])
       ));
 
-    $result = $this->client->transactionalGroups->get(id: $groupId);
+    $result = $this->client->transactionalGroups->get(transactional_group_id: $groupId);
 
     $this->assertEquals($groupId, $result['id']);
   }

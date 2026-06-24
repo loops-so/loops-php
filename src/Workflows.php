@@ -28,9 +28,9 @@ class Workflows
         ]);
     }
 
-    public function get(string $id): mixed
+    public function get(string $workflow_id): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/workflows/' . $id);
+        return $this->client->query(method: 'GET', endpoint: 'v1/workflows/' . $workflow_id);
     }
 
     public function getNode(string $workflow_id, string $node_id): mixed

@@ -40,12 +40,12 @@ class TransactionalGroups
         ]);
     }
 
-    public function get(string $id): mixed
+    public function get(string $transactional_group_id): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/transactional-groups/' . $id);
+        return $this->client->query(method: 'GET', endpoint: 'v1/transactional-groups/' . $transactional_group_id);
     }
 
-    public function update(string $id, ?string $name = null, ?string $description = null): mixed
+    public function update(string $transactional_group_id, ?string $name = null, ?string $description = null): mixed
     {
         $payload = [];
         if ($name !== null) {
@@ -55,7 +55,7 @@ class TransactionalGroups
             $payload['description'] = $description;
         }
 
-        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-groups/' . $id, options: [
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-groups/' . $transactional_group_id, options: [
             'json' => $payload
         ]);
     }

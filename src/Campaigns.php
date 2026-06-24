@@ -58,13 +58,13 @@ class Campaigns
         ]);
     }
 
-    public function get(string $id): mixed
+    public function get(string $campaign_id): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/campaigns/' . $id);
+        return $this->client->query(method: 'GET', endpoint: 'v1/campaigns/' . $campaign_id);
     }
 
     public function update(
-        string $id,
+        string $campaign_id,
         ?string $name = null,
         ?string $campaign_group_id = null,
         ?string $mailing_list_id = null,
@@ -92,7 +92,7 @@ class Campaigns
             $payload['scheduling'] = $scheduling;
         }
 
-        return $this->client->query(method: 'POST', endpoint: 'v1/campaigns/' . $id, options: [
+        return $this->client->query(method: 'POST', endpoint: 'v1/campaigns/' . $campaign_id, options: [
             'json' => $payload
         ]);
     }

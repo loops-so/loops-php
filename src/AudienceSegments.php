@@ -28,8 +28,8 @@ class AudienceSegments
         ]);
     }
 
-    public function get(string $id): mixed
+    public function get(string $audience_segment_id): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/audience-segments/' . $id);
+        return $this->client->query(method: 'GET', endpoint: 'v1/audience-segments/' . $audience_segment_id);
     }
 }

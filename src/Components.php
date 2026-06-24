@@ -28,8 +28,8 @@ class Components
         ]);
     }
 
-    public function get(string $id): mixed
+    public function get(string $component_id): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/components/' . $id);
+        return $this->client->query(method: 'GET', endpoint: 'v1/components/' . $component_id);
     }
 }
