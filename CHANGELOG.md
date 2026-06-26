@@ -1,7 +1,8 @@
-## v3.1.0 - Jun 24, 2026
+## v3.1.0 - Jun 26, 2026
 
 Added support for new content endpoints:
 
+- Breaking change: `emailMessages->update()` now has named parameters.
 - `uploads->upload()` for uploading images.
 - `transactional->create()`, `transactional->get()`, `transactional->update()`, `transactional->ensureDraft()`, and `transactional->publish()` for managing transactional emails.
 - `audienceSegments->list()` and `audienceSegments->get()` for audience segments.
@@ -10,6 +11,7 @@ Added support for new content endpoints:
 - `transactionalGroups->list()`, `transactionalGroups->create()`, `transactionalGroups->get()`, and `transactionalGroups->update()` for transactional groups.
 - `emailMessages->preview()` for sending test email previews.
 - Extended `campaigns->create()` and `campaigns->update()` with audience, group, and scheduling fields.
+- Requires PHP 8.1.
 
 ## v3.0.0 - May 19, 2026
 
