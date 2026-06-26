@@ -31,7 +31,10 @@ class Events
                 'eventProperties' => $event_properties,
                 'mailingLists' => $mailing_lists,
             ],
-            Util::omitNull(['email' => $email, 'userId' => $user_id]),
+            Util::omitNull([
+                'email' => $email,
+                'userId' => $user_id,
+            ]),
             $contact_properties
         );
 

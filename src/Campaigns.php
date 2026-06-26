@@ -31,22 +31,16 @@ class Campaigns
         ?array $audience_filter = null,
         ?array $scheduling = null
     ): mixed {
-        $payload = ['name' => $name];
-        if ($campaign_group_id !== null) {
-            $payload['campaignGroupId'] = $campaign_group_id;
-        }
-        if ($mailing_list_id !== null) {
-            $payload['mailingListId'] = $mailing_list_id;
-        }
-        if ($audience_segment_id !== null) {
-            $payload['audienceSegmentId'] = $audience_segment_id;
-        }
-        if ($audience_filter !== null) {
-            $payload['audienceFilter'] = $audience_filter;
-        }
-        if ($scheduling !== null) {
-            $payload['scheduling'] = $scheduling;
-        }
+        $payload = array_merge(
+            ['name' => $name],
+            Util::omitNull([
+                'campaignGroupId' => $campaign_group_id,
+                'mailingListId' => $mailing_list_id,
+                'audienceSegmentId' => $audience_segment_id,
+                'audienceFilter' => $audience_filter,
+                'scheduling' => $scheduling,
+            ])
+        );
 
         return $this->client->query(method: 'POST', endpoint: 'v1/campaigns', options: [
             'json' => $payload
@@ -60,35 +54,25 @@ class Campaigns
 
     public function update(
         string $campaign_id,
-        ?string $name = null,
+        string $name,
         ?string $campaign_group_id = null,
-        ?string $mailing_list_id = null,
-        ?string $audience_segment_id = null,
-        ?array $audience_filter = null,
+        mixed $mailing_list_id = Core::UNSET,
+        mixed $audience_segment_id = Core::UNSET,
+        mixed $audience_filter = Core::UNSET,
         ?array $scheduling = null
     ): mixed {
-        $payload = [];
-        if ($name !== null) {
-            $payload['name'] = $name;
-        }
-        if ($campaign_group_id !== null) {
-            $payload['campaignGroupId'] = $campaign_group_id;
-        }
-        if ($mailing_list_id !== null) {
-            $payload['mailingListId'] = $mailing_list_id;
-        }
-        if ($audience_segment_id !== null) {
-            $payload['audienceSegmentId'] = $audience_segment_id;
-        }
-        if ($audience_filter !== null) {
-            $payload['audienceFilter'] = $audience_filter;
-        }
-        if ($scheduling !== null) {
-            $payload['scheduling'] = $scheduling;
-        }
-        if ($payload === []) {
-            throw new \InvalidArgumentException(message: 'At least one field must be provided.');
-        }
+        $payload = array_merge(
+            ['name' => $name],
+            Util::omitNull([
+                'campaignGroupId' => $campaign_group_id,
+                'scheduling' => $scheduling,
+            ]),
+            Util::omitUnset([
+                'mailingListId' => $mailing_list_id,
+                'audienceSegmentId' => $audience_segment_id,
+                'audienceFilter' => $audience_filter,
+            ]),
+        );
 
         return $this->client->query(method: 'POST', endpoint: 'v1/campaigns/' . $campaign_id, options: [
             'json' => $payload

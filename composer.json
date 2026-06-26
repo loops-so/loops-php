@@ -5,7 +5,7 @@
   "type": "library",
   "homepage": "https://github.com/Loops-so/loops-php",
   "require": {
-    "php": "^8.0",
+    "php": "^8.1",
     "guzzlehttp/guzzle": "^7.9"
   },
   "autoload": {

@@ -14,6 +14,8 @@ Install the Loops package [using Composer](https://packagist.org/packages/loops-
 composer require loops-so/loops
 ```
 
+Requires PHP 8.1.
+
 ## Usage
 
 You will need a Loops API key to use the package.
@@ -995,15 +997,18 @@ $result = $loops->transactional->get(transactional_id: 'clfq6dinn000yl70fgwwyp82
 
 Update a transactional email.
 
+At least one field alongside `transactional_id` must be provided.
+
 [API Reference](https://loops.so/docs/api-reference/update-transactional-email)
 
 #### Parameters
 
+
 | Name                       | Type   | Required | Notes                                                                                      |
 | -------------------------- | ------ | -------- | ------------------------------------------------------------------------------------------ |
-| `$transactional_id`          | string | Yes      | The ID of the transactional email.                                                           |
-| `$name`                    | string | No       | The updated name. At least one of `$name` or `$transactional_group_id` must be provided.   |
-| `$transactional_group_id`  | string | No       | The ID of the group to move this transactional email to.                                   |
+| `$transactional_id`        | string | Yes      | The ID of the transactional email.                                                         |
+| `$name`                    | string | No       | The updated name.   |
+| `$transactional_group_id`  | string | No       | The ID of the group to move this transactional email to.  |
 
 #### Example
 
@@ -1286,6 +1291,8 @@ $result = $loops->campaigns->get(campaign_id: 'cln4o7p9q0110msw5ekjtmv78');
 
 Update a draft campaign's name, group, audience, or scheduling.
 
+At least one field alongside `campaign_id` must be provided.
+
 [API Reference](https://loops.so/docs/api-reference/update-campaign)
 
 #### Parameters
@@ -1295,12 +1302,11 @@ Update a draft campaign's name, group, audience, or scheduling.
 | `$campaign_id`          | string | Yes      | The ID of the campaign.                                                                               |
 | `$name`                 | string | No       | The updated name.                                                                                     |
 | `$campaign_group_id`    | string | No       | The ID of the group to move this campaign to.                                                         |
-| `$mailing_list_id`      | string | No       | The ID of the mailing list to send to.                                                                |
-| `$audience_segment_id`  | string | No       | The ID of an audience segment. Setting this clears any `audience_filter`.                             |
-| `$audience_filter`      | array  | No       | A tree of audience conditions. See the API reference for the filter schema.                           |
 | `$scheduling`           | array  | No       | When the campaign should send. Use `['method' => 'now']` or `['method' => 'schedule', 'timestamp' => '...']`. |
+| `$mailing_list_id`      | string | No       | The ID of the mailing list to send to. Pass `null` to clear.                                          |
+| `$audience_segment_id`  | string | No       | The ID of an audience segment. Setting this clears any `audience_filter`. Pass `null` to clear.       |
+| `$audience_filter`      | array  | No       | A tree of audience conditions. See the API reference for the filter schema. Pass `null` to clear.     |
 
-At least one field must be provided.
 
 #### Example
 
@@ -1308,6 +1314,12 @@ At least one field must be provided.
 $result = $loops->campaigns->update(
   campaign_id: 'cln4o7p9q0110msw5ekjtmv78',
   name: 'Updated name'
+);
+
+// Clear the mailing list audience target
+$result = $loops->campaigns->update(
+  campaign_id: 'cln4o7p9q0110msw5ekjtmv78',
+  mailing_list_id: null
 );
 ```
 
@@ -1379,6 +1391,8 @@ $result = $loops->campaignGroups->get(campaign_group_id: 'clq7r0s2t0176pvz8hnmpw
 
 Update a campaign group's name or description.
 
+At least one field alongside `campaign_group_id` must be provided.
+
 [API Reference](https://loops.so/docs/api-reference/update-campaign-group)
 
 #### Parameters
@@ -1388,8 +1402,6 @@ Update a campaign group's name or description.
 | `$campaign_group_id` | string | Yes      | The ID of the campaign group.           |
 | `$name`         | string | No       | Cannot be the reserved name "Unsorted". |
 | `$description`  | string | No       |                                         |
-
-At least one field must be provided.
 
 #### Example
 
@@ -1530,7 +1542,9 @@ $result = $loops->emailMessages->get(email_message_id: 'cly8k3m0n0044jpx2bghepq4
 
 ### emailMessages->update()
 
-Update an email message's subject, preview text, sender, or LMX content.
+Update an email message.
+
+At least one field alongside `email_message_id` must be provided.
 
 [API Reference](https://loops.so/docs/api-reference/update-email-message)
 
@@ -1539,19 +1553,38 @@ Update an email message's subject, preview text, sender, or LMX content.
 | Name      | Type  | Required | Notes                                                                                                                                                                                                 |
 | --------- | ----- | -------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `$email_message_id` | string | Yes   | The ID of the email message.                                                                                                                                                                          |
-| `$fields` | array | No       | Fields to update. Use API field names: `expectedRevisionId`, `subject`, `previewText`, `fromName`, `fromEmail`, `replyToEmail`, `lmx`, `contactPropertiesFallbacks`, `eventPropertiesFallbacks`, `dataVariablesFallbacks`. Supply `expectedRevisionId` matching the current `contentRevisionId` to avoid 409 conflicts. For the `*Fallbacks` maps, a `null` value deletes an individual fallback entry. |
+| `$expected_revision_id` | string | No | Supply a value matching the current `contentRevisionId` to avoid 409 conflicts. |
+| `$subject` | string | No | The email subject line. |
+| `$preview_text` | string | No | The email preview text. |
+| `$from_name` | string | No | The sender name. |
+| `$from_email` | string | No | The sender email address (the name before the `@`; your sending domain will be automatically appended). |
+| `$reply_to_email` | string | No | The reply-to email address. |
+| `$lmx` | string | No | The LMX content for the email message. |
+| `$contact_properties_fallbacks` | array | No | Contact property fallback values. Pass `null` as a value to remove an individual fallback entry. |
+| `$event_properties_fallbacks` | array | No | Event property fallback values. Pass `null` as a value to remove an individual fallback entry. |
+| `$data_variables_fallbacks` | array | No | Data variable fallback values. Pass `null` as a value to remove an individual fallback entry. |
+
 
 #### Example
 
 ```php
 $result = $loops->emailMessages->update(
   email_message_id: 'cly8k3m0n0044jpx2bghepq45',
-  fields: [
-    'expectedRevisionId' => 'clm9n4o6p0088lrz4dijslt67',
-    'subject' => 'Updated subject',
-    'lmx' => '<Email><Text>Hello</Text></Email>'
+  expected_revision_id: 'clm9n4o6p0088lrz4dijslt67',
+  subject: 'Updated subject',
+  lmx: '<Email><Text>Hello</Text></Email>'
+);
+
+// Example with contact property fallbacks
+$result = $loops->emailMessages->update(
+  email_message_id: 'cly8k3m0n0044jpx2bghepq45',
+  contact_properties_fallbacks: [
+    'firstName' => 'there',      // If firstName is missing, use "there"
+    'company' => 'your company', // If company is missing, use "your company"
+    'planName' => null           // null removes the fallback for "planName"
   ]
 );
+
 ```
 
 ---
@@ -1650,6 +1683,8 @@ $result = $loops->transactionalGroups->get(transactional_group_id: 'clv2w3x4y028
 
 Update a transactional group's name or description.
 
+At least one field alongside `transactional_group_id` must be provided.
+
 [API Reference](https://loops.so/docs/api-reference/update-transactional-group)
 
 #### Parameters
@@ -1660,7 +1695,6 @@ Update a transactional group's name or description.
 | `$name`         | string | No       | Cannot be the reserved name "Unsorted". |
 | `$description`  | string | No       |                                         |
 
-At least one field must be provided.
 
 #### Example
 

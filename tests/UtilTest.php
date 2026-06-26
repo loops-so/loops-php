@@ -2,6 +2,7 @@
 
 namespace Tests;
 
+use Loops\Core;
 use Loops\Util;
 use PHPUnit\Framework\TestCase;
 
@@ -35,5 +36,26 @@ class UtilTest extends TestCase
       'dataVariables' => [],
       'count' => 0,
     ], $result);
+  }
+
+  public function testOmitUnsetRemovesUnsetValues(): void
+  {
+    $result = Util::omitUnset([
+      'name' => 'Updated',
+      'mailingListId' => Core::UNSET,
+      'audienceFilter' => Core::UNSET,
+    ]);
+
+    $this->assertEquals(['name' => 'Updated'], $result);
+  }
+
+  public function testOmitUnsetKeepsExplicitNull(): void
+  {
+    $result = Util::omitUnset([
+      'mailingListId' => null,
+      'audienceFilter' => Core::UNSET,
+    ]);
+
+    $this->assertEquals(['mailingListId' => null], $result);
   }
 }
