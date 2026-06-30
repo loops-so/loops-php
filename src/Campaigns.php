@@ -15,23 +15,35 @@ class Campaigns
 
     public function list(?int $per_page = null, ?string $cursor = null): mixed
     {
-        $query = [];
-        if ($per_page !== null) {
-            $query['perPage'] = $per_page;
-        }
-        if ($cursor) {
-            $query['cursor'] = $cursor;
-        }
-
         return $this->client->query(method: 'GET', endpoint: 'v1/campaigns', options: [
-            'query' => $query
+            'query' => Util::omitNull([
+                'perPage' => $per_page,
+                'cursor' => $cursor,
+            ])
         ]);
     }
 
-    public function create(string $name): mixed
-    {
+    public function create(
+        string $name,
+        ?string $campaign_group_id = null,
+        ?string $mailing_list_id = null,
+        ?string $audience_segment_id = null,
+        ?array $audience_filter = null,
+        ?array $scheduling = null
+    ): mixed {
+        $payload = array_merge(
+            ['name' => $name],
+            Util::omitNull([
+                'campaignGroupId' => $campaign_group_id,
+                'mailingListId' => $mailing_list_id,
+                'audienceSegmentId' => $audience_segment_id,
+                'audienceFilter' => $audience_filter,
+                'scheduling' => $scheduling,
+            ])
+        );
+
         return $this->client->query(method: 'POST', endpoint: 'v1/campaigns', options: [
-            'json' => ['name' => $name]
+            'json' => $payload
         ]);
     }
 
@@ -40,10 +52,30 @@ class Campaigns
         return $this->client->query(method: 'GET', endpoint: 'v1/campaigns/' . $campaign_id);
     }
 
-    public function update(string $campaign_id, string $name): mixed
-    {
+    public function update(
+        string $campaign_id,
+        string $name,
+        ?string $campaign_group_id = null,
+        mixed $mailing_list_id = Core::UNSET,
+        mixed $audience_segment_id = Core::UNSET,
+        mixed $audience_filter = Core::UNSET,
+        ?array $scheduling = null
+    ): mixed {
+        $payload = array_merge(
+            ['name' => $name],
+            Util::omitNull([
+                'campaignGroupId' => $campaign_group_id,
+                'scheduling' => $scheduling,
+            ]),
+            Util::omitUnset([
+                'mailingListId' => $mailing_list_id,
+                'audienceSegmentId' => $audience_segment_id,
+                'audienceFilter' => $audience_filter,
+            ]),
+        );
+
         return $this->client->query(method: 'POST', endpoint: 'v1/campaigns/' . $campaign_id, options: [
-            'json' => ['name' => $name]
+            'json' => $payload
         ]);
     }
 }

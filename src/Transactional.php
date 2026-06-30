@@ -18,7 +18,7 @@ class Transactional
         string $email,
         ?bool $add_to_audience = false,
         ?array $data_variables = [],
-        ?array $attachments = [], /** @var array<array{filename: string, content_type: string, data: string}> */
+        ?array $attachments = [], /** @var array<array{filename: string, contentType: string, data: string}> */
         ?array $headers = []
     ): mixed {
         $payload = [
@@ -35,17 +35,56 @@ class Transactional
         ]);
     }
 
-    public function list(?int $per_page = 20, ?string $cursor = null): mixed
+    public function list(?int $per_page = null, ?string $cursor = null): mixed
     {
-
-        $query = [
-            'per_page' => $per_page
-        ];
-        if ($cursor)
-            $query['cursor'] = $cursor;
-
-        return $this->client->query(method: 'GET', endpoint: 'v1/transactional', options: [
-            'query' => $query
+        return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails', options: [
+            'query' => Util::omitNull([
+                'perPage' => $per_page,
+                'cursor' => $cursor,
+            ])
         ]);
+    }
+
+    public function create(string $name, ?string $transactional_group_id = null): mixed
+    {
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails', options: [
+            'json' => Util::omitNull([
+                'name' => $name,
+                'transactionalGroupId' => $transactional_group_id,
+            ])
+        ]);
+    }
+
+    public function get(string $transactional_id): mixed
+    {
+        return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails/' . $transactional_id);
+    }
+
+    public function update(
+        string $transactional_id,
+        ?string $name = null,
+        ?string $transactional_group_id = null
+    ): mixed {
+        $payload = Util::omitNull([
+            'name' => $name,
+            'transactionalGroupId' => $transactional_group_id,
+        ]);
+        if ($payload === []) {
+            throw new \InvalidArgumentException(message: 'At least one field must be provided.');
+        }
+
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $transactional_id, options: [
+            'json' => $payload
+        ]);
+    }
+
+    public function ensureDraft(string $transactional_id): mixed
+    {
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $transactional_id . '/draft');
+    }
+
+    public function publish(string $transactional_id): mixed
+    {
+        return $this->client->query(method: 'POST', endpoint: 'v1/transactional-emails/' . $transactional_id . '/publish');
     }
 }

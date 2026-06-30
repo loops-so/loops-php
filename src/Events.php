@@ -25,15 +25,18 @@ class Events
             throw new \InvalidArgumentException(message: 'You must provide an email or user_id value.');
         }
 
-        $payload = [
-            'eventName' => $event_name,
-            'email' => $email,
-            'userId' => $user_id,
-            'eventProperties' => $event_properties,
-            'mailingLists' => $mailing_lists,
-        ];
-
-        $payload = array_merge($payload, $contact_properties);
+        $payload = array_merge(
+            [
+                'eventName' => $event_name,
+                'eventProperties' => $event_properties,
+                'mailingLists' => $mailing_lists,
+            ],
+            Util::omitNull([
+                'email' => $email,
+                'userId' => $user_id,
+            ]),
+            $contact_properties
+        );
 
         return $this->client->query(method: 'POST', endpoint: 'v1/events/send', options: [
             'json' => $payload,

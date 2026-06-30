@@ -15,11 +15,13 @@ class Contacts
 
     public function create(string $email, ?array $properties = [], ?array $mailing_lists = []): mixed
     {
-        $payload = [
-            'email' => $email,
-            'mailingLists' => $mailing_lists
-        ];
-        $payload = array_merge($payload, $properties);
+        $payload = array_merge(
+            [
+                'email' => $email,
+                'mailingLists' => $mailing_lists
+            ], 
+            $properties
+        );
 
         return $this->client->query(method: 'POST', endpoint: 'v1/contacts/create', options: [
             'json' => $payload
@@ -31,12 +33,12 @@ class Contacts
         if (!$email && !$user_id) {
             throw new \InvalidArgumentException(message: 'You must provide an email or user_id value.');
         }
-        $payload = [
-            'email' => $email,
-            'userId' => $user_id,
-            'mailingLists' => $mailing_lists
-        ];
-        $payload = array_merge($payload, $properties);
+
+        $payload = array_merge(
+            Util::omitNull(['email' => $email, 'userId' => $user_id]),
+            ['mailingLists' => $mailing_lists],
+            $properties
+        );
 
         return $this->client->query(method: 'PUT', endpoint: 'v1/contacts/update', options: [
             'json' => $payload
@@ -51,14 +53,12 @@ class Contacts
         if (!$email && !$user_id) {
             throw new \InvalidArgumentException(message: 'You must provide an email or user_id value.');
         }
-        $query = [];
-        if ($email)
-            $query['email'] = $email;
-        if ($user_id)
-            $query['userId'] = $user_id;
 
         return $this->client->query(method: 'GET', endpoint: 'v1/contacts/find', options: [
-            'query' => $query
+            'query' => Util::omitNull([
+                'email' => $email,
+                'userId' => $user_id,
+            ])
         ]);
     }
 
@@ -71,14 +71,11 @@ class Contacts
             throw new \InvalidArgumentException(message: 'You must provide an email or user_id value.');
         }
 
-        $payload = [];
-        if ($email)
-            $payload['email'] = $email;
-        if ($user_id)
-            $payload['userId'] = $user_id;
-
         return $this->client->query(method: 'POST', endpoint: 'v1/contacts/delete', options: [
-            'json' => $payload
+            'json' => Util::omitNull([
+                'email' => $email,
+                'userId' => $user_id,
+            ])
         ]);
     }
 
@@ -91,14 +88,11 @@ class Contacts
             throw new \InvalidArgumentException(message: 'You must provide an email or user_id value.');
         }
 
-        $query = [];
-        if ($email)
-            $query['email'] = $email;
-        if ($user_id)
-            $query['userId'] = $user_id;
-
         return $this->client->query(method: 'GET', endpoint: 'v1/contacts/suppression', options: [
-            'query' => $query
+            'query' => Util::omitNull([
+                'email' => $email,
+                'userId' => $user_id,
+            ])
         ]);
     }
 
@@ -111,14 +105,11 @@ class Contacts
             throw new \InvalidArgumentException(message: 'You must provide an email or user_id value.');
         }
 
-        $query = [];
-        if ($email)
-            $query['email'] = $email;
-        if ($user_id)
-            $query['userId'] = $user_id;
-
         return $this->client->query(method: 'DELETE', endpoint: 'v1/contacts/suppression', options: [
-            'query' => $query
+            'query' => Util::omitNull([
+                'email' => $email,
+                'userId' => $user_id,
+            ])
         ]);
     }
 }

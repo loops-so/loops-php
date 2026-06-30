@@ -51,19 +51,19 @@ class EmailMessagesTest extends TestCase
   public function testUpdateEmailMessage(): void
   {
     $emailMessageId = 'msg_123';
-    $fields = [
-      'expectedRevisionId' => 'rev_123',
-      'subject' => 'Updated subject',
-      'lmx' => '<Email><Text>Hello</Text></Email>'
-    ];
+    $lmx = '<Email><Text>Hello</Text></Email>';
 
     $this->mockHttpClient
       ->expects($this->once())
       ->method('post')
       ->with(
         'v1/email-messages/' . $emailMessageId,
-        $this->callback(function ($options) use ($fields) {
-          return $options['json'] === $fields;
+        $this->callback(function ($options) use ($lmx) {
+          return $options['json'] === [
+            'expectedRevisionId' => 'rev_123',
+            'subject' => 'Updated subject',
+            'lmx' => $lmx,
+          ];
         })
       )
       ->willReturn(new Response(
@@ -77,7 +77,7 @@ class EmailMessagesTest extends TestCase
           'fromName' => 'Loops',
           'fromEmail' => 'hello',
           'replyToEmail' => '',
-          'lmx' => $fields['lmx'],
+          'lmx' => $lmx,
           'contentRevisionId' => 'rev_456',
           'updatedAt' => '2025-01-02T00:00:00.000Z'
         ])
@@ -85,10 +85,43 @@ class EmailMessagesTest extends TestCase
 
     $result = $this->client->emailMessages->update(
       email_message_id: $emailMessageId,
-      fields: $fields
+      expected_revision_id: 'rev_123',
+      subject: 'Updated subject',
+      lmx: $lmx
     );
 
     $this->assertEquals('Updated subject', $result['subject']);
     $this->assertEquals('rev_456', $result['contentRevisionId']);
+  }
+
+  public function testPreviewEmailMessage(): void
+  {
+    $emailMessageId = 'msg_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/email-messages/' . $emailMessageId . '/preview',
+        $this->callback(function ($options) {
+          return $options['json']['emails'] === ['test@example.com']
+            && $options['json']['contactProperties'] === ['firstName' => 'Ada'];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'success' => true,
+          'emailMessageId' => $emailMessageId
+        ])
+      ));
+
+    $result = $this->client->emailMessages->preview(
+      email_message_id: $emailMessageId,
+      emails: ['test@example.com'],
+      contact_properties: ['firstName' => 'Ada']
+    );
+
+    $this->assertTrue($result['success']);
   }
 }

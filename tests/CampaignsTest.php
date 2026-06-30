@@ -127,4 +127,80 @@ class CampaignsTest extends TestCase
 
     $this->assertEquals('Updated name', $result['name']);
   }
+
+  public function testUpdateCampaignClearsMailingList(): void
+  {
+    $campaignId = 'camp_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/campaigns/' . $campaignId,
+        $this->callback(function ($options) {
+          return $options['json'] === [
+            'name' => 'Spring announcement',
+            'mailingListId' => null,
+          ];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'success' => true,
+          'campaignId' => $campaignId,
+          'name' => 'Spring announcement',
+          'status' => 'Draft',
+          'createdAt' => '2025-01-01T00:00:00.000Z',
+          'updatedAt' => '2025-01-02T00:00:00.000Z',
+          'emailMessageId' => 'msg_123'
+        ])
+      ));
+
+    $result = $this->client->campaigns->update(
+      campaign_id: $campaignId,
+      name: 'Spring announcement',
+      mailing_list_id: null
+    );
+
+    $this->assertTrue($result['success']);
+  }
+
+  public function testUpdateCampaignClearsAudienceFilter(): void
+  {
+    $campaignId = 'camp_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/campaigns/' . $campaignId,
+        $this->callback(function ($options) {
+          return $options['json'] === [
+            'name' => 'Spring announcement',
+            'audienceFilter' => null,
+          ];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'success' => true,
+          'campaignId' => $campaignId,
+          'name' => 'Spring announcement',
+          'status' => 'Draft',
+          'createdAt' => '2025-01-01T00:00:00.000Z',
+          'updatedAt' => '2025-01-02T00:00:00.000Z',
+          'emailMessageId' => 'msg_123'
+        ])
+      ));
+
+    $result = $this->client->campaigns->update(
+      campaign_id: $campaignId,
+      name: 'Spring announcement',
+      audience_filter: null
+    );
+
+    $this->assertTrue($result['success']);
+  }
 }

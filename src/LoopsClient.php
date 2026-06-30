@@ -7,6 +7,7 @@ class LoopsClient
   private const BASE_URI = 'https://app.loops.so/api/';
 
   private \GuzzleHttp\Client $httpClient;
+  private \GuzzleHttp\Client $uploadHttpClient;
   public ApiKey $apiKey;
   public Contacts $contacts;
   public Events $events;
@@ -17,7 +18,12 @@ class LoopsClient
   public Themes $themes;
   public Components $components;
   public Campaigns $campaigns;
+  public CampaignGroups $campaignGroups;
   public EmailMessages $emailMessages;
+  public Uploads $uploads;
+  public AudienceSegments $audienceSegments;
+  public Workflows $workflows;
+  public TransactionalGroups $transactionalGroups;
 
   public function __construct(string $api_key)
   {
@@ -30,6 +36,10 @@ class LoopsClient
       'http_errors' => false
     ]);
 
+    $this->uploadHttpClient = new \GuzzleHttp\Client(config: [
+      'http_errors' => false,
+    ]);
+
     $this->apiKey = new ApiKey(client: $this);
     $this->contacts = new Contacts(client: $this);
     $this->events = new Events(client: $this);
@@ -40,7 +50,12 @@ class LoopsClient
     $this->themes = new Themes(client: $this);
     $this->components = new Components(client: $this);
     $this->campaigns = new Campaigns(client: $this);
+    $this->campaignGroups = new CampaignGroups(client: $this);
     $this->emailMessages = new EmailMessages(client: $this);
+    $this->uploads = new Uploads(client: $this);
+    $this->audienceSegments = new AudienceSegments(client: $this);
+    $this->workflows = new Workflows(client: $this);
+    $this->transactionalGroups = new TransactionalGroups(client: $this);
   }
 
   /**
@@ -52,6 +67,27 @@ class LoopsClient
   public function setHttpClient(\GuzzleHttp\Client $client): void
   {
     $this->httpClient = $client;
+  }
+
+  public function getHttpClient(): \GuzzleHttp\Client
+  {
+    return $this->httpClient;
+  }
+
+  /**
+   * Sets the HTTP client used for pre-signed upload URLs. Primarily for testing.
+   *
+   * @param \GuzzleHttp\Client $client
+   * @return void
+   */
+  public function setUploadHttpClient(\GuzzleHttp\Client $client): void
+  {
+    $this->uploadHttpClient = $client;
+  }
+
+  public function getUploadHttpClient(): \GuzzleHttp\Client
+  {
+    return $this->uploadHttpClient;
   }
 
   /**

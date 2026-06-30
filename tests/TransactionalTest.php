@@ -105,7 +105,7 @@ class TransactionalTest extends TestCase
     $this->assertTrue($result['success']);
   }
 
-  public function testGetTransactionals(): void
+  public function testListTransactionals(): void
   {
     $per_page = 20;
     $cursor = 'clyo0q4wo01p59fsecyxqsh38';
@@ -115,11 +115,11 @@ class TransactionalTest extends TestCase
       ->expects($this->once())
       ->method('get')
       ->with(
-        'v1/transactional',
+        'v1/transactional-emails',
         $this->callback(function ($options) use ($per_page, $cursor) {
           // Verify the query parameters are passed correctly
           return isset($options['query'])
-            && $options['query']['per_page'] === $per_page
+            && $options['query']['perPage'] === $per_page
             && $options['query']['cursor'] === $cursor;
         })
       )
@@ -132,13 +132,16 @@ class TransactionalTest extends TestCase
             'perPage' => 20,
             'totalPages' => 2,
             'nextCursor' => 'clyo0q4wo01p59fsecyxqsh38',
-            'nextPage' => 'https://app.loops.so/api/v1/transactional?cursor=clyo0q4wo01p59fsecyxqsh38&perPage=20'
+            'nextPage' => 'https://app.loops.so/api/v1/transactional-emails?cursor=clyo0q4wo01p59fsecyxqsh38&perPage=20'
           ],
           'data' => [
             [
               'id' => 'clfn0k1yg001imo0fdeqg30i8',
               'name' => 'Welcome email',
-              'lastUpdated' => '2023-11-06T17:48:07.249Z',
+              'draftEmailMessageId' => null,
+              'publishedEmailMessageId' => 'msg_abc123',
+              'createdAt' => '2023-11-06T17:48:07.249Z',
+              'updatedAt' => '2023-11-06T17:48:07.249Z',
               'dataVariables' => []
             ]
           ]
@@ -169,7 +172,207 @@ class TransactionalTest extends TestCase
     $this->assertNotEmpty($result['data']);
     $this->assertArrayHasKey('id', $result['data'][0]);
     $this->assertArrayHasKey('name', $result['data'][0]);
-    $this->assertArrayHasKey('lastUpdated', $result['data'][0]);
+    $this->assertArrayHasKey('draftEmailMessageId', $result['data'][0]);
+    $this->assertArrayHasKey('publishedEmailMessageId', $result['data'][0]);
+    $this->assertArrayHasKey('createdAt', $result['data'][0]);
+    $this->assertArrayHasKey('updatedAt', $result['data'][0]);
     $this->assertArrayHasKey('dataVariables', $result['data'][0]);
+  }
+
+  public function testCreateTransactional(): void
+  {
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/transactional-emails',
+        $this->callback(function ($options) {
+          return $options['json']['name'] === 'Welcome email';
+        })
+      )
+      ->willReturn(new Response(
+        status: 201,
+        body: json_encode([
+          'id' => 'txn_123',
+          'name' => 'Welcome email',
+          'draftEmailMessageId' => 'msg_123',
+          'draftEmailMessageContentRevisionId' => 'rev_123',
+          'publishedEmailMessageId' => null,
+          'createdAt' => '2025-01-01T00:00:00.000Z',
+          'updatedAt' => '2025-01-01T00:00:00.000Z',
+          'dataVariables' => []
+        ])
+      ));
+
+    $result = $this->client->transactional->create(name: 'Welcome email');
+
+    $this->assertEquals('txn_123', $result['id']);
+    $this->assertEquals('msg_123', $result['draftEmailMessageId']);
+  }
+
+  public function testCreateTransactionalWithGroup(): void
+  {
+    $groupId = 'grp_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/transactional-emails',
+        $this->callback(function ($options) use ($groupId) {
+          return $options['json']['name'] === 'Welcome email'
+            && $options['json']['transactionalGroupId'] === $groupId;
+        })
+      )
+      ->willReturn(new Response(status: 201, body: json_encode(['id' => 'txn_123'])));
+
+    $this->client->transactional->create(
+      name: 'Welcome email',
+      transactional_group_id: $groupId
+    );
+  }
+
+  public function testGetTransactional(): void
+  {
+    $transactionalId = 'txn_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('get')
+      ->with('v1/transactional-emails/' . $transactionalId)
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'id' => $transactionalId,
+          'name' => 'Welcome email',
+          'draftEmailMessageId' => 'msg_123',
+          'publishedEmailMessageId' => 'msg_456',
+          'createdAt' => '2025-01-01T00:00:00.000Z',
+          'updatedAt' => '2025-01-01T00:00:00.000Z',
+          'dataVariables' => ['firstName']
+        ])
+      ));
+
+    $result = $this->client->transactional->get(transactional_id: $transactionalId);
+
+    $this->assertEquals($transactionalId, $result['id']);
+  }
+
+  public function testUpdateTransactional(): void
+  {
+    $transactionalId = 'txn_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/transactional-emails/' . $transactionalId,
+        $this->callback(function ($options) {
+          return $options['json']['name'] === 'Updated welcome email';
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'id' => $transactionalId,
+          'name' => 'Updated welcome email',
+          'draftEmailMessageId' => 'msg_123',
+          'publishedEmailMessageId' => null,
+          'createdAt' => '2025-01-01T00:00:00.000Z',
+          'updatedAt' => '2025-01-02T00:00:00.000Z',
+          'dataVariables' => []
+        ])
+      ));
+
+    $result = $this->client->transactional->update(
+      transactional_id: $transactionalId,
+      name: 'Updated welcome email'
+    );
+
+    $this->assertEquals('Updated welcome email', $result['name']);
+  }
+
+  public function testUpdateTransactionalGroup(): void
+  {
+    $transactionalId = 'txn_123';
+    $groupId = 'grp_456';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/transactional-emails/' . $transactionalId,
+        $this->callback(function ($options) use ($groupId) {
+          return $options['json']['transactionalGroupId'] === $groupId
+            && !isset($options['json']['name']);
+        })
+      )
+      ->willReturn(new Response(status: 200, body: json_encode(['id' => $transactionalId])));
+
+    $this->client->transactional->update(
+      transactional_id: $transactionalId,
+      transactional_group_id: $groupId
+    );
+  }
+
+  public function testUpdateTransactionalWithoutFieldsThrows(): void
+  {
+    $this->expectException(\InvalidArgumentException::class);
+    $this->expectExceptionMessage('At least one field must be provided.');
+
+    $this->client->transactional->update(transactional_id: 'txn_123');
+  }
+
+  public function testEnsureDraftTransactional(): void
+  {
+    $transactionalId = 'txn_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with('v1/transactional-emails/' . $transactionalId . '/draft')
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'id' => $transactionalId,
+          'name' => 'Welcome email',
+          'draftEmailMessageId' => 'msg_123',
+          'draftEmailMessageContentRevisionId' => 'rev_123',
+          'publishedEmailMessageId' => 'msg_456',
+          'createdAt' => '2025-01-01T00:00:00.000Z',
+          'updatedAt' => '2025-01-02T00:00:00.000Z',
+          'dataVariables' => []
+        ])
+      ));
+
+    $result = $this->client->transactional->ensureDraft(transactional_id: $transactionalId);
+
+    $this->assertEquals('msg_123', $result['draftEmailMessageId']);
+  }
+
+  public function testPublishTransactional(): void
+  {
+    $transactionalId = 'txn_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with('v1/transactional-emails/' . $transactionalId . '/publish')
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'id' => $transactionalId,
+          'name' => 'Welcome email',
+          'draftEmailMessageId' => null,
+          'publishedEmailMessageId' => 'msg_123',
+          'createdAt' => '2025-01-01T00:00:00.000Z',
+          'updatedAt' => '2025-01-02T00:00:00.000Z',
+          'dataVariables' => ['firstName']
+        ])
+      ));
+
+    $result = $this->client->transactional->publish(transactional_id: $transactionalId);
+
+    $this->assertEquals('msg_123', $result['publishedEmailMessageId']);
   }
 }

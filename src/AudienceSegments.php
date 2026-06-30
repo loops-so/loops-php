@@ -4,7 +4,7 @@ namespace Loops;
 
 use Loops\LoopsClient;
 
-class Themes
+class AudienceSegments
 {
     private $client;
 
@@ -15,7 +15,7 @@ class Themes
 
     public function list(?int $per_page = null, ?string $cursor = null): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/themes', options: [
+        return $this->client->query(method: 'GET', endpoint: 'v1/audience-segments', options: [
             'query' => Util::omitNull([
                 'perPage' => $per_page,
                 'cursor' => $cursor,
@@ -23,8 +23,8 @@ class Themes
         ]);
     }
 
-    public function get(string $theme_id): mixed
+    public function get(string $audience_segment_id): mixed
     {
-        return $this->client->query(method: 'GET', endpoint: 'v1/themes/' . $theme_id);
+        return $this->client->query(method: 'GET', endpoint: 'v1/audience-segments/' . $audience_segment_id);
     }
 }

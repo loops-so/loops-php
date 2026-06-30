@@ -18,10 +18,58 @@ class EmailMessages
         return $this->client->query(method: 'GET', endpoint: 'v1/email-messages/' . $email_message_id);
     }
 
-    public function update(string $email_message_id, array $fields = []): mixed
-    {
+    public function update(
+        string $email_message_id,
+        ?string $expected_revision_id = null,
+        ?string $subject = null,
+        ?string $preview_text = null,
+        ?string $from_name = null,
+        ?string $from_email = null,
+        ?string $reply_to_email = null,
+        ?string $lmx = null,
+        ?array $contact_properties_fallbacks = null,
+        ?array $event_properties_fallbacks = null,
+        ?array $data_variables_fallbacks = null
+    ): mixed {
+        $payload = Util::omitNull([
+            'expectedRevisionId' => $expected_revision_id,
+            'subject' => $subject,
+            'previewText' => $preview_text,
+            'fromName' => $from_name,
+            'fromEmail' => $from_email,
+            'replyToEmail' => $reply_to_email,
+            'lmx' => $lmx,
+            'contactPropertiesFallbacks' => $contact_properties_fallbacks,
+            'eventPropertiesFallbacks' => $event_properties_fallbacks,
+            'dataVariablesFallbacks' => $data_variables_fallbacks,
+        ]);
+        if ($payload === []) {
+            throw new \InvalidArgumentException(message: 'At least one field must be provided.');
+        }
+
         return $this->client->query(method: 'POST', endpoint: 'v1/email-messages/' . $email_message_id, options: [
-            'json' => $fields
+            'json' => $payload
+        ]);
+    }
+
+    public function preview(
+        string $email_message_id,
+        array $emails,
+        ?array $contact_properties = null,
+        ?array $event_properties = null,
+        ?array $data_variables = null
+    ): mixed {
+        $payload = array_merge(
+            ['emails' => $emails],
+            Util::omitNull([
+                'contactProperties' => $contact_properties,
+                'eventProperties' => $event_properties,
+                'dataVariables' => $data_variables,
+            ])
+        );
+
+        return $this->client->query(method: 'POST', endpoint: 'v1/email-messages/' . $email_message_id . '/preview', options: [
+            'json' => $payload
         ]);
     }
 }
