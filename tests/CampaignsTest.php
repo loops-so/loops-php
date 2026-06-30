@@ -139,7 +139,6 @@ class CampaignsTest extends TestCase
         'v1/campaigns/' . $campaignId,
         $this->callback(function ($options) {
           return $options['json'] === [
-            'name' => 'Spring announcement',
             'mailingListId' => null,
           ];
         })
@@ -159,7 +158,6 @@ class CampaignsTest extends TestCase
 
     $result = $this->client->campaigns->update(
       campaign_id: $campaignId,
-      name: 'Spring announcement',
       mailing_list_id: null
     );
 
