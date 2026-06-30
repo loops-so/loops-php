@@ -1,4 +1,8 @@
-## v3.1.0 - Jun 26, 2026
+## v3.1.1 - Jun 30, 2026
+
+`$name` is no longer required when updating campaigns.
+
+## v3.1.0 - Jun 30, 2026
 
 Added support for new content endpoints:
 

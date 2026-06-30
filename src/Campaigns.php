@@ -54,7 +54,7 @@ class Campaigns
 
     public function update(
         string $campaign_id,
-        string $name,
+        ?string $name = null,
         ?string $campaign_group_id = null,
         mixed $mailing_list_id = Core::UNSET,
         mixed $audience_segment_id = Core::UNSET,
@@ -62,8 +62,8 @@ class Campaigns
         ?array $scheduling = null
     ): mixed {
         $payload = array_merge(
-            ['name' => $name],
             Util::omitNull([
+                'name' => $name,
                 'campaignGroupId' => $campaign_group_id,
                 'scheduling' => $scheduling,
             ]),
