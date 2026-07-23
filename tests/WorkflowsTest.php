@@ -293,7 +293,7 @@ class WorkflowsTest extends TestCase
         'v1/workflows/' . $workflowId . '/nodes/' . $nodeId . '/add-branch',
         $this->callback(function ($options) {
           return $options['json'] === [
-            'expectedRevisionId' => null,
+            'expectedRevisionId' => 'rev_123',
           ];
         })
       )
@@ -308,7 +308,7 @@ class WorkflowsTest extends TestCase
     $result = $this->client->workflows->addBranch(
       workflow_id: $workflowId,
       node_id: $nodeId,
-      expected_revision_id: null
+      expected_revision_id: 'rev_123'
     );
 
     $this->assertEquals('node_child', $result['node']['id']);

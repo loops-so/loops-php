@@ -1689,7 +1689,7 @@ At least one of `$name` or `$description` must be provided. To change the mailin
 | Name                      | Type   | Required | Notes                                                                 |
 | ------------------------- | ------ | -------- | --------------------------------------------------------------------- |
 | `$workflow_id`            | string | Yes      | The ID of the workflow.                                               |
-| `$expected_revision_id`   | string | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
 | `$name`                   | string | No       | The updated workflow name.                                            |
 | `$description`            | string | No       | The updated workflow description.                                     |
 
@@ -1718,7 +1718,7 @@ If queued contacts would be removed, the API returns `"status": "queuedContactsF
 | Name                      | Type    | Required | Notes                                                                 |
 | ------------------------- | ------- | -------- | --------------------------------------------------------------------- |
 | `$workflow_id`            | string  | Yes      | The ID of the workflow.                                               |
-| `$expected_revision_id`   | string  | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
 | `$mailing_list_id`        | string  | Yes      | The mailing list to use. Pass `null` to clear.                        |
 | `$dry_run`                | boolean | No       | If `true`, validate without modifying the workflow.                   |
 | `$queued_contact_policy`  | string  | No       | `fail` (default) or `discard`.                                        |
@@ -1773,7 +1773,7 @@ Use `insert_mode: "between"` with `from_node_id` and `to_node_id`, or `insert_mo
 | Name                      | Type   | Required | Notes                                                                 |
 | ------------------------- | ------ | -------- | --------------------------------------------------------------------- |
 | `$workflow_id`            | string | Yes      | The ID of the workflow.                                               |
-| `$expected_revision_id`   | string | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
 | `$insert_mode`            | string | Yes      | `between` or `before`.                                                |
 | `$node_type_name`         | string | Yes      | One of `AudienceFilter`, `BranchNode`, `ExperimentBranchNode`, `TimerAction`, `SendEmailAction`, `VariantNode`. |
 | `$from_node_id`           | string | No       | Required when `insert_mode` is `between`.                             |
@@ -1807,7 +1807,7 @@ Update workflow-node-owned fields for a single node.
 | ------------------------- | ------ | -------- | --------------------------------------------------------------------- |
 | `$workflow_id`            | string | Yes      | The ID of the workflow.                                               |
 | `$node_id`                | string | Yes      | The ID of the workflow node.                                          |
-| `$expected_revision_id`   | string | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
 | `$payload`                | array  | Yes      | Node-type-specific fields to update.                                  |
 
 #### Example
@@ -1837,7 +1837,7 @@ If contacts are queued at the node, the API returns `"status": "queuedContactsFo
 | ------------------------- | ------- | -------- | --------------------------------------------------------------------- |
 | `$workflow_id`            | string  | Yes      | The ID of the workflow.                                               |
 | `$node_id`                | string  | Yes      | The ID of the workflow node.                                          |
-| `$expected_revision_id`   | string  | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
 | `$dry_run`                | boolean | No       | If `true`, validate without modifying the workflow.                   |
 | `$queued_contact_policy`  | string  | No       | `fail` (default) or `discard`.                                        |
 
@@ -1866,7 +1866,7 @@ Add a branch and child node under an existing `BranchNode` or `ExperimentBranchN
 | ------------------------- | ------ | -------- | --------------------------------------------------------------------- |
 | `$workflow_id`            | string | Yes      | The ID of the workflow.                                               |
 | `$node_id`                | string | Yes      | The ID of the branch or experiment node.                              |
-| `$expected_revision_id`   | string | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
 
 #### Example
 
@@ -1892,7 +1892,7 @@ Delete a node and its downstream subtree.
 | ------------------------- | ------- | -------- | --------------------------------------------------------------------- |
 | `$workflow_id`            | string  | Yes      | The ID of the workflow.                                               |
 | `$node_id`                | string  | Yes      | The root node ID of the subtree to delete.                            |
-| `$expected_revision_id`   | string  | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
 | `$dry_run`                | boolean | No       | If `true`, validate without modifying the workflow.                   |
 | `$queued_contact_policy`  | string  | No       | `fail` (default) or `discard`.                                        |
 

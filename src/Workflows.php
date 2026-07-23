@@ -29,11 +29,10 @@ class Workflows
         ?string $mailing_list_id = null
     ): mixed {
         return $this->client->query(method: 'POST', endpoint: 'v1/workflows', options: [
-            'json' => Util::omitNull([
-                'name' => $name,
+            'json' => array_merge(['name' => $name], Util::omitNull([
                 'description' => $description,
                 'mailingListId' => $mailing_list_id,
-            ])
+            ]))
         ]);
     }
 
@@ -48,16 +47,14 @@ class Workflows
         ?string $name = null,
         ?string $description = null
     ): mixed {
-        $payload = array_merge(
-            ['expectedRevisionId' => $expected_revision_id],
-            Util::omitNull([
-                'name' => $name,
-                'description' => $description,
-            ])
-        );
-        if (!array_key_exists('name', $payload) && !array_key_exists('description', $payload)) {
+        $payload = Util::omitNull([
+            'name' => $name,
+            'description' => $description,
+        ]);
+        if ($payload === []) {
             throw new \InvalidArgumentException(message: 'At least one of name or description must be provided.');
         }
+        $payload = array_merge(['expectedRevisionId' => $expected_revision_id], $payload);
 
         return $this->client->query(method: 'POST', endpoint: 'v1/workflows/' . $workflow_id, options: [
             'json' => $payload

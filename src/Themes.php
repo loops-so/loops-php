@@ -26,10 +26,9 @@ class Themes
     public function create(string $name, ?array $styles = null): mixed
     {
         return $this->client->query(method: 'POST', endpoint: 'v1/themes', options: [
-            'json' => Util::omitNull([
-                'name' => $name,
+            'json' => array_merge(['name' => $name], Util::omitNull([
                 'styles' => $styles,
-            ])
+            ]))
         ]);
     }
 
