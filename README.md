@@ -118,8 +118,12 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [dedicatedSendingIps->list()](#dedicatedsendingips-list)
 - [themes->list()](#themes-list)
 - [themes->get()](#themes-get)
+- [themes->create()](#themes-create)
+- [themes->update()](#themes-update)
 - [components->list()](#components-list)
 - [components->get()](#components-get)
+- [components->create()](#components-create)
+- [components->update()](#components-update)
 - [campaigns->list()](#campaigns-list)
 - [campaigns->create()](#campaigns-create)
 - [campaigns->get()](#campaigns-get)
@@ -129,13 +133,26 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [campaignGroups->get()](#campaigngroups-get)
 - [campaignGroups->update()](#campaigngroups-update)
 - [audienceSegments->list()](#audiencesegments-list)
+- [audienceSegments->create()](#audiencesegments-create)
 - [audienceSegments->get()](#audiencesegments-get)
 - [workflows->list()](#workflows-list)
+- [workflows->create()](#workflows-create)
 - [workflows->get()](#workflows-get)
+- [workflows->update()](#workflows-update)
+- [workflows->changeMailingList()](#workflows-changemailinglist)
 - [workflows->getNode()](#workflows-getnode)
+- [workflows->createNode()](#workflows-createnode)
+- [workflows->updateNode()](#workflows-updatenode)
+- [workflows->deleteNode()](#workflows-deletenode)
+- [workflows->addBranch()](#workflows-addbranch)
+- [workflows->deleteNodeRecursive()](#workflows-deletenoderecursive)
+- [eventPatterns->list()](#eventpatterns-list)
+- [eventPatterns->get()](#eventpatterns-get)
+- [eventPatterns->getByName()](#eventpatterns-getbyname)
 - [emailMessages->get()](#emailmessages-get)
 - [emailMessages->update()](#emailmessages-update)
 - [emailMessages->preview()](#emailmessages-preview)
+- [emailMessages->guardian()](#emailmessages-guardian)
 - [transactionalGroups->list()](#transactionalgroups-list)
 - [transactionalGroups->create()](#transactionalgroups-create)
 - [transactionalGroups->get()](#transactionalgroups-get)
@@ -1159,6 +1176,57 @@ $result = $loops->themes->get(theme_id: 'clo5p8q0r0132ntx6flkunw89');
 
 ---
 
+### themes->create()
+
+Create an email theme.
+
+[API Reference](https://loops.so/docs/api-reference/create-theme)
+
+#### Parameters
+
+| Name      | Type   | Required | Notes                                                                 |
+| --------- | ------ | -------- | --------------------------------------------------------------------- |
+| `$name`   | string | Yes      | The theme name.                                                       |
+| `$styles` | array  | No       | Style attributes matching LMX `<Style />` attribute names.            |
+
+#### Example
+
+```php
+$result = $loops->themes->create(
+  name: 'Dark mode',
+  styles: ['backgroundColor' => '#111827', 'bodyColor' => '#1f2937']
+);
+```
+
+---
+
+### themes->update()
+
+Update a theme's name and/or styles. Style changes cascade to emails using the theme.
+
+At least one of `$name` or `$styles` must be provided.
+
+[API Reference](https://loops.so/docs/api-reference/update-theme)
+
+#### Parameters
+
+| Name        | Type   | Required | Notes                      |
+| ----------- | ------ | -------- | -------------------------- |
+| `$theme_id` | string | Yes      | The ID of the theme.       |
+| `$name`     | string | No       | The updated theme name.    |
+| `$styles`   | array  | No       | Updated style attributes.  |
+
+#### Example
+
+```php
+$result = $loops->themes->update(
+  theme_id: 'clo5p8q0r0132ntx6flkunw89',
+  name: 'Updated theme'
+);
+```
+
+---
+
 ### components->list()
 
 List email components.
@@ -1200,6 +1268,57 @@ $result = $loops->components->get(component_id: 'clp6q9r1s0154ouy7gmlovx90');
 
 ---
 
+### components->create()
+
+Create an email component from an LMX body.
+
+[API Reference](https://loops.so/docs/api-reference/create-component)
+
+#### Parameters
+
+| Name    | Type   | Required | Notes                             |
+| ------- | ------ | -------- | --------------------------------- |
+| `$name` | string | Yes      | The component name.               |
+| `$lmx`  | string | Yes      | The component body as LMX.        |
+
+#### Example
+
+```php
+$result = $loops->components->create(
+  name: 'Header',
+  lmx: '<Paragraph>Welcome to Acme</Paragraph>'
+);
+```
+
+---
+
+### components->update()
+
+Update a component's name and/or LMX body. Body changes cascade to emails using the component.
+
+At least one of `$name` or `$lmx` must be provided.
+
+[API Reference](https://loops.so/docs/api-reference/update-component)
+
+#### Parameters
+
+| Name            | Type   | Required | Notes                        |
+| --------------- | ------ | -------- | ---------------------------- |
+| `$component_id` | string | Yes      | The ID of the component.     |
+| `$name`         | string | No       | The updated component name.  |
+| `$lmx`          | string | No       | The updated LMX body.        |
+
+#### Example
+
+```php
+$result = $loops->components->update(
+  component_id: 'clp6q9r1s0154ouy7gmlovx90',
+  lmx: '<Paragraph>Updated header</Paragraph>'
+);
+```
+
+---
+
 ### campaigns->list()
 
 List campaigns.
@@ -1234,8 +1353,8 @@ Create a new draft campaign.
 | `$name`                 | string | Yes      | The campaign name.                                                                                    |
 | `$campaign_group_id`    | string | No       | The ID of the group to add this campaign to.                                                          |
 | `$mailing_list_id`      | string | No       | The ID of the mailing list to send to.                                                                |
-| `$audience_segment_id`  | string | No       | The ID of an audience segment. Setting this clears any `audience_filter`.                             |
-| `$audience_filter`      | array  | No       | A tree of audience conditions. See the API reference for the filter schema.                           |
+| `$audience_segment_id`  | string | No       | The ID of an audience segment. Setting this without also providing `audience_filter` clears any existing `audience_filter`. If both are provided, the filter is applied on top of the segment's filter. |
+| `$audience_filter`      | array  | No       | A tree of audience conditions. See the API reference for the filter schema. Setting this without also providing `audience_segment_id` clears any existing `audience_segment_id`. |
 | `$scheduling`           | array  | No       | When the campaign should send. Use `['method' => 'now']` or `['method' => 'schedule', 'timestamp' => '...']`. |
 
 #### Example
@@ -1291,7 +1410,7 @@ $result = $loops->campaigns->get(campaign_id: 'cln4o7p9q0110msw5ekjtmv78');
 
 Update a draft campaign's name, group, audience, or scheduling.
 
-At least one field alongside `campaign_id` must be provided.
+At least one field must be provided.
 
 [API Reference](https://loops.so/docs/api-reference/update-campaign)
 
@@ -1304,8 +1423,8 @@ At least one field alongside `campaign_id` must be provided.
 | `$campaign_group_id`    | string | No       | The ID of the group to move this campaign to.                                                         |
 | `$scheduling`           | array  | No       | When the campaign should send. Use `['method' => 'now']` or `['method' => 'schedule', 'timestamp' => '...']`. |
 | `$mailing_list_id`      | string | No       | The ID of the mailing list to send to. Pass `null` to clear.                                          |
-| `$audience_segment_id`  | string | No       | The ID of an audience segment. Setting this clears any `audience_filter`. Pass `null` to clear.       |
-| `$audience_filter`      | array  | No       | A tree of audience conditions. See the API reference for the filter schema. Pass `null` to clear.     |
+| `$audience_segment_id`  | string | No       | The ID of an audience segment. Setting this without also providing `audience_filter` clears any existing `audience_filter`. If both are provided, the filter is applied on top of the segment's filter. Pass `null` to clear. |
+| `$audience_filter`      | array  | No       | A tree of audience conditions. See the API reference for the filter schema. Setting this without also providing `audience_segment_id` clears any existing `audience_segment_id`. Pass `null` to clear. |
 
 
 #### Example
@@ -1435,6 +1554,42 @@ $result = $loops->audienceSegments->list();
 
 ---
 
+### audienceSegments->create()
+
+Create an audience segment.
+
+[API Reference](https://loops.so/docs/api-reference/create-audience-segment)
+
+#### Parameters
+
+| Name            | Type   | Required | Notes                                                                 |
+| --------------- | ------ | -------- | --------------------------------------------------------------------- |
+| `$name`         | string | Yes      | The segment name. Must be unique within the team.                     |
+| `$filter`       | array  | Yes      | A tree of audience conditions with `match` and `conditions`.          |
+| `$description`  | string | No       | An optional description of the audience segment.                      |
+
+#### Example
+
+```php
+$result = $loops->audienceSegments->create(
+  name: 'Power users',
+  filter: [
+    'match' => 'all',
+    'conditions' => [
+      [
+        'type' => 'property',
+        'key' => 'plan',
+        'operator' => 'equals',
+        'value' => 'pro',
+      ],
+    ],
+  ],
+  description: 'Contacts on the pro plan'
+);
+```
+
+---
+
 ### audienceSegments->get()
 
 Get an audience segment by ID.
@@ -1476,6 +1631,31 @@ $result = $loops->workflows->list();
 
 ---
 
+### workflows->create()
+
+Create a draft workflow with a blank trigger and exit node.
+
+[API Reference](https://loops.so/docs/api-reference/create-workflow)
+
+#### Parameters
+
+| Name               | Type   | Required | Notes                                              |
+| ------------------ | ------ | -------- | -------------------------------------------------- |
+| `$name`            | string | Yes      | The workflow name.                                 |
+| `$description`     | string | No       | The workflow description.                          |
+| `$mailing_list_id` | string | No       | The mailing list the workflow sends to.            |
+
+#### Example
+
+```php
+$result = $loops->workflows->create(
+  name: 'Welcome series',
+  description: 'Onboarding emails for new signups'
+);
+```
+
+---
+
 ### workflows->get()
 
 Get a simplified workflow graph.
@@ -1492,6 +1672,66 @@ Get a simplified workflow graph.
 
 ```php
 $result = $loops->workflows->get(workflow_id: 'cls9t2u4v0210rx20jpuary23');
+```
+
+---
+
+### workflows->update()
+
+Update a workflow's display properties.
+
+At least one of `$name` or `$description` must be provided. To change the mailing list, use `workflows->changeMailingList()`.
+
+[API Reference](https://loops.so/docs/api-reference/update-workflow)
+
+#### Parameters
+
+| Name                      | Type   | Required | Notes                                                                 |
+| ------------------------- | ------ | -------- | --------------------------------------------------------------------- |
+| `$workflow_id`            | string | Yes      | The ID of the workflow.                                               |
+| `$expected_revision_id`   | string | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$name`                   | string | No       | The updated workflow name.                                            |
+| `$description`            | string | No       | The updated workflow description.                                     |
+
+#### Example
+
+```php
+$result = $loops->workflows->update(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
+  name: 'Updated welcome series'
+);
+```
+
+---
+
+### workflows->changeMailingList()
+
+Dry run or apply a workflow mailing list change.
+
+If queued contacts would be removed, the API returns `"status": "queuedContactsFound"`. Retry with `queued_contact_policy: "discard"` to apply the change.
+
+[API Reference](https://loops.so/docs/api-reference/change-workflow-mailing-list)
+
+#### Parameters
+
+| Name                      | Type    | Required | Notes                                                                 |
+| ------------------------- | ------- | -------- | --------------------------------------------------------------------- |
+| `$workflow_id`            | string  | Yes      | The ID of the workflow.                                               |
+| `$expected_revision_id`   | string  | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$mailing_list_id`        | string  | Yes      | The mailing list to use. Pass `null` to clear.                        |
+| `$dry_run`                | boolean | No       | If `true`, validate without modifying the workflow.                   |
+| `$queued_contact_policy`  | string  | No       | `fail` (default) or `discard`.                                        |
+
+#### Example
+
+```php
+$result = $loops->workflows->changeMailingList(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
+  mailing_list_id: 'cm06f5v0e45nf0ml5754o9cix',
+  dry_run: true
+);
 ```
 
 ---
@@ -1520,6 +1760,216 @@ $result = $loops->workflows->getNode(
 
 ---
 
+### workflows->createNode()
+
+Create a new default workflow node.
+
+Use `insert_mode: "between"` with `from_node_id` and `to_node_id`, or `insert_mode: "before"` with `before_node_id`.
+
+[API Reference](https://loops.so/docs/api-reference/create-workflow-node)
+
+#### Parameters
+
+| Name                      | Type   | Required | Notes                                                                 |
+| ------------------------- | ------ | -------- | --------------------------------------------------------------------- |
+| `$workflow_id`            | string | Yes      | The ID of the workflow.                                               |
+| `$expected_revision_id`   | string | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$insert_mode`            | string | Yes      | `between` or `before`.                                                |
+| `$node_type_name`         | string | Yes      | One of `AudienceFilter`, `BranchNode`, `ExperimentBranchNode`, `TimerAction`, `SendEmailAction`, `VariantNode`. |
+| `$from_node_id`           | string | No       | Required when `insert_mode` is `between`.                             |
+| `$to_node_id`             | string | No       | Required when `insert_mode` is `between`.                             |
+| `$before_node_id`         | string | No       | Required when `insert_mode` is `before`.                              |
+
+#### Example
+
+```php
+$result = $loops->workflows->createNode(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
+  insert_mode: 'between',
+  node_type_name: 'TimerAction',
+  from_node_id: 'clt0u3v5w0232sy31kqvbzs34',
+  to_node_id: 'clt0u3v5w0232sy31kqvbzs35'
+);
+```
+
+---
+
+### workflows->updateNode()
+
+Update workflow-node-owned fields for a single node.
+
+[API Reference](https://loops.so/docs/api-reference/update-workflow-node)
+
+#### Parameters
+
+| Name                      | Type   | Required | Notes                                                                 |
+| ------------------------- | ------ | -------- | --------------------------------------------------------------------- |
+| `$workflow_id`            | string | Yes      | The ID of the workflow.                                               |
+| `$node_id`                | string | Yes      | The ID of the workflow node.                                          |
+| `$expected_revision_id`   | string | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$payload`                | array  | Yes      | Node-type-specific fields to update.                                  |
+
+#### Example
+
+```php
+$result = $loops->workflows->updateNode(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  node_id: 'clt0u3v5w0232sy31kqvbzs34',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
+  payload: ['amount' => 2, 'unit' => 'd']
+);
+```
+
+---
+
+### workflows->deleteNode()
+
+Delete a single workflow node.
+
+If contacts are queued at the node, the API returns `"status": "queuedContactsFound"`. Retry with `queued_contact_policy: "discard"` to delete.
+
+[API Reference](https://loops.so/docs/api-reference/delete-workflow-node)
+
+#### Parameters
+
+| Name                      | Type    | Required | Notes                                                                 |
+| ------------------------- | ------- | -------- | --------------------------------------------------------------------- |
+| `$workflow_id`            | string  | Yes      | The ID of the workflow.                                               |
+| `$node_id`                | string  | Yes      | The ID of the workflow node.                                          |
+| `$expected_revision_id`   | string  | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$dry_run`                | boolean | No       | If `true`, validate without modifying the workflow.                   |
+| `$queued_contact_policy`  | string  | No       | `fail` (default) or `discard`.                                        |
+
+#### Example
+
+```php
+$result = $loops->workflows->deleteNode(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  node_id: 'clt0u3v5w0232sy31kqvbzs34',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
+  dry_run: true
+);
+```
+
+---
+
+### workflows->addBranch()
+
+Add a branch and child node under an existing `BranchNode` or `ExperimentBranchNode`.
+
+[API Reference](https://loops.so/docs/api-reference/add-workflow-branch)
+
+#### Parameters
+
+| Name                      | Type   | Required | Notes                                                                 |
+| ------------------------- | ------ | -------- | --------------------------------------------------------------------- |
+| `$workflow_id`            | string | Yes      | The ID of the workflow.                                               |
+| `$node_id`                | string | Yes      | The ID of the branch or experiment node.                              |
+| `$expected_revision_id`   | string | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+
+#### Example
+
+```php
+$result = $loops->workflows->addBranch(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  node_id: 'clt0u3v5w0232sy31kqvbzs34',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8'
+);
+```
+
+---
+
+### workflows->deleteNodeRecursive()
+
+Delete a node and its downstream subtree.
+
+[API Reference](https://loops.so/docs/api-reference/delete-workflow-nodes)
+
+#### Parameters
+
+| Name                      | Type    | Required | Notes                                                                 |
+| ------------------------- | ------- | -------- | --------------------------------------------------------------------- |
+| `$workflow_id`            | string  | Yes      | The ID of the workflow.                                               |
+| `$node_id`                | string  | Yes      | The root node ID of the subtree to delete.                            |
+| `$expected_revision_id`   | string  | Yes      | The latest workflow revision token. Pass `null` for older workflows.  |
+| `$dry_run`                | boolean | No       | If `true`, validate without modifying the workflow.                   |
+| `$queued_contact_policy`  | string  | No       | `fail` (default) or `discard`.                                        |
+
+#### Example
+
+```php
+$result = $loops->workflows->deleteNodeRecursive(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  node_id: 'clt0u3v5w0232sy31kqvbzs34',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
+  dry_run: true
+);
+```
+
+---
+
+### eventPatterns->list()
+
+List event patterns available to workflow event trigger nodes.
+
+[API Reference](https://loops.so/docs/api-reference/list-event-patterns)
+
+#### Parameters
+
+| Name        | Type    | Required | Notes                                                                                                                         |
+| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+
+#### Example
+
+```php
+$result = $loops->eventPatterns->list();
+```
+
+---
+
+### eventPatterns->get()
+
+Get an event pattern by ID.
+
+[API Reference](https://loops.so/docs/api-reference/get-event-pattern)
+
+#### Parameters
+
+| Name                 | Type   | Required | Notes                        |
+| -------------------- | ------ | -------- | ---------------------------- |
+| `$event_pattern_id`  | string | Yes      | The ID of the event pattern. |
+
+#### Example
+
+```php
+$result = $loops->eventPatterns->get(event_pattern_id: 'cle1v2e3n4t5p6a7t8t9e0r1');
+```
+
+---
+
+### eventPatterns->getByName()
+
+Get an event pattern by event name. Event names are case-sensitive.
+
+[API Reference](https://loops.so/docs/api-reference/get-event-pattern-by-name)
+
+#### Parameters
+
+| Name          | Type   | Required | Notes                |
+| ------------- | ------ | -------- | -------------------- |
+| `$event_name` | string | Yes      | The exact event name.|
+
+#### Example
+
+```php
+$result = $loops->eventPatterns->getByName(event_name: 'signup');
+```
+
+---
+
 ### emailMessages->get()
 
 Get an email message, including its compiled LMX content.
@@ -1544,7 +1994,7 @@ $result = $loops->emailMessages->get(email_message_id: 'cly8k3m0n0044jpx2bghepq4
 
 Update an email message.
 
-At least one field alongside `email_message_id` must be provided.
+At least one field must be provided.
 
 [API Reference](https://loops.so/docs/api-reference/update-email-message)
 
@@ -1559,6 +2009,10 @@ At least one field alongside `email_message_id` must be provided.
 | `$from_name` | string | No | The sender name. |
 | `$from_email` | string | No | The sender email address (the name before the `@`; your sending domain will be automatically appended). |
 | `$reply_to_email` | string | No | The reply-to email address. |
+| `$cc_email` | string | No | CC email address. Requires the team to have CC/BCC enabled. |
+| `$bcc_email` | string | No | BCC email address. Requires the team to have CC/BCC enabled. |
+| `$language_code` | string | No | Language code for the email. Requires translation to be enabled for the team. |
+| `$email_format` | string | No | `styled` or `plain`. |
 | `$lmx` | string | No | The LMX content for the email message. |
 | `$contact_properties_fallbacks` | array | No | Contact property fallback values. Pass `null` as a value to remove an individual fallback entry. |
 | `$event_properties_fallbacks` | array | No | Event property fallback values. Pass `null` as a value to remove an individual fallback entry. |
@@ -1613,6 +2067,26 @@ $result = $loops->emailMessages->preview(
   emails: ['test@example.com'],
   contact_properties: ['firstName' => 'Alex']
 );
+```
+
+---
+
+### emailMessages->guardian()
+
+Run Guardian content validation on an email message and return errors and warnings.
+
+[API Reference](https://loops.so/docs/api-reference/run-guardian-checks)
+
+#### Parameters
+
+| Name                | Type   | Required | Notes                        |
+| ------------------- | ------ | -------- | ---------------------------- |
+| `$email_message_id` | string | Yes      | The ID of the email message. |
+
+#### Example
+
+```php
+$result = $loops->emailMessages->guardian(email_message_id: 'cly8k3m0n0044jpx2bghepq45');
 ```
 
 ---

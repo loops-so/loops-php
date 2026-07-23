@@ -73,6 +73,9 @@ class Campaigns
                 'audienceFilter' => $audience_filter,
             ]),
         );
+        if ($payload === []) {
+            throw new \InvalidArgumentException(message: 'At least one field must be provided.');
+        }
 
         return $this->client->query(method: 'POST', endpoint: 'v1/campaigns/' . $campaign_id, options: [
             'json' => $payload

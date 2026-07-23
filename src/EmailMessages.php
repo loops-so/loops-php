@@ -26,6 +26,10 @@ class EmailMessages
         ?string $from_name = null,
         ?string $from_email = null,
         ?string $reply_to_email = null,
+        ?string $cc_email = null,
+        ?string $bcc_email = null,
+        ?string $language_code = null,
+        ?string $email_format = null,
         ?string $lmx = null,
         ?array $contact_properties_fallbacks = null,
         ?array $event_properties_fallbacks = null,
@@ -38,6 +42,10 @@ class EmailMessages
             'fromName' => $from_name,
             'fromEmail' => $from_email,
             'replyToEmail' => $reply_to_email,
+            'ccEmail' => $cc_email,
+            'bccEmail' => $bcc_email,
+            'languageCode' => $language_code,
+            'emailFormat' => $email_format,
             'lmx' => $lmx,
             'contactPropertiesFallbacks' => $contact_properties_fallbacks,
             'eventPropertiesFallbacks' => $event_properties_fallbacks,
@@ -71,5 +79,10 @@ class EmailMessages
         return $this->client->query(method: 'POST', endpoint: 'v1/email-messages/' . $email_message_id . '/preview', options: [
             'json' => $payload
         ]);
+    }
+
+    public function guardian(string $email_message_id): mixed
+    {
+        return $this->client->query(method: 'GET', endpoint: 'v1/email-messages/' . $email_message_id . '/guardian');
     }
 }

@@ -43,6 +43,52 @@ class AudienceSegmentsTest extends TestCase
     $this->assertEquals([], $result['data']);
   }
 
+  public function testCreateAudienceSegment(): void
+  {
+    $filter = [
+      'match' => 'all',
+      'conditions' => [
+        [
+          'type' => 'property',
+          'key' => 'plan',
+          'operator' => 'equals',
+          'value' => 'pro',
+        ],
+      ],
+    ];
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/audience-segments',
+        $this->callback(function ($options) use ($filter) {
+          return $options['json'] === [
+            'name' => 'Power users',
+            'filter' => $filter,
+            'description' => 'Contacts on the pro plan',
+          ];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'id' => 'seg_123',
+          'name' => 'Power users',
+          'description' => 'Contacts on the pro plan',
+          'filter' => $filter,
+        ])
+      ));
+
+    $result = $this->client->audienceSegments->create(
+      name: 'Power users',
+      filter: $filter,
+      description: 'Contacts on the pro plan'
+    );
+
+    $this->assertEquals('seg_123', $result['id']);
+  }
+
   public function testGetAudienceSegment(): void
   {
     $segmentId = 'seg_123';

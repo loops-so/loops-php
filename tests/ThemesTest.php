@@ -69,4 +69,65 @@ class ThemesTest extends TestCase
 
     $this->assertEquals($themeId, $result['themeId']);
   }
+
+  public function testCreateTheme(): void
+  {
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/themes',
+        $this->callback(function ($options) {
+          return $options['json'] === [
+            'name' => 'Dark mode',
+            'styles' => ['backgroundColor' => '#111827'],
+          ];
+        })
+      )
+      ->willReturn(new Response(
+        status: 201,
+        body: json_encode([
+          'id' => 'theme_abc123',
+          'name' => 'Dark mode',
+          'styles' => ['backgroundColor' => '#111827'],
+          'isDefault' => false,
+        ])
+      ));
+
+    $result = $this->client->themes->create(
+      name: 'Dark mode',
+      styles: ['backgroundColor' => '#111827']
+    );
+
+    $this->assertEquals('Dark mode', $result['name']);
+  }
+
+  public function testUpdateTheme(): void
+  {
+    $themeId = 'theme_abc123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/themes/' . $themeId,
+        $this->callback(function ($options) {
+          return $options['json'] === [
+            'name' => 'Updated theme',
+          ];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'id' => $themeId,
+          'name' => 'Updated theme',
+          'affectedEmailCount' => 0,
+        ])
+      ));
+
+    $result = $this->client->themes->update(theme_id: $themeId, name: 'Updated theme');
+
+    $this->assertEquals('Updated theme', $result['name']);
+  }
 }

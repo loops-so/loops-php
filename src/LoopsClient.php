@@ -23,6 +23,7 @@ class LoopsClient
   public Uploads $uploads;
   public AudienceSegments $audienceSegments;
   public Workflows $workflows;
+  public EventPatterns $eventPatterns;
   public TransactionalGroups $transactionalGroups;
 
   public function __construct(string $api_key)
@@ -55,6 +56,7 @@ class LoopsClient
     $this->uploads = new Uploads(client: $this);
     $this->audienceSegments = new AudienceSegments(client: $this);
     $this->workflows = new Workflows(client: $this);
+    $this->eventPatterns = new EventPatterns(client: $this);
     $this->transactionalGroups = new TransactionalGroups(client: $this);
   }
 
