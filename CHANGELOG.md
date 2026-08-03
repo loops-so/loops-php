@@ -1,3 +1,14 @@
+## v3.2.0 - Aug 3, 2026
+
+OpenAPI 1.21.1:
+
+- Added workflow write APIs: `workflows->create()`, `workflows->update()`, `workflows->changeMailingList()`, `workflows->createNode()`, `workflows->updateNode()`, `workflows->deleteNode()`, `workflows->addBranch()`, and `workflows->deleteNodeRecursive()`.
+- Added `eventPatterns->list()`, `eventPatterns->get()`, and `eventPatterns->getByName()`.
+- Added `audienceSegments->create()`.
+- Added `themes->create()` / `themes->update()` and `components->create()` / `components->update()`.
+- Added `emailMessages->guardian()` and extra update fields (`cc_email`, `bcc_email`, `language_code`, `email_format`).
+- `campaigns->update()` now rejects empty payloads.
+
 ## v3.1.1 - Jun 30, 2026
 
 `$name` is no longer required when updating campaigns.
