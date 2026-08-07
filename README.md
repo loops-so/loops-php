@@ -145,6 +145,7 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [workflows->updateNode()](#workflows-updatenode)
 - [workflows->deleteNode()](#workflows-deletenode)
 - [workflows->addBranch()](#workflows-addbranch)
+- [workflows->rerouteNode()](#workflows-reroutenode)
 - [workflows->deleteNodeRecursive()](#workflows-deletenoderecursive)
 - [eventPatterns->list()](#eventpatterns-list)
 - [eventPatterns->get()](#eventpatterns-get)
@@ -1764,7 +1765,10 @@ $result = $loops->workflows->getNode(
 
 Create a new default workflow node.
 
-Use `insert_mode: "between"` with `from_node_id` and `to_node_id`, or `insert_mode: "before"` with `before_node_id`.
+Use `$insert_mode` to choose placement:
+- `between` — insert between `$from_node_id` and `$to_node_id`
+- `before` — insert before `$to_node_id`
+- `after` — insert after `$from_node_id` (source must have exactly one outgoing connection)
 
 [API Reference](https://loops.so/docs/api-reference/create-workflow-node)
 
@@ -1774,11 +1778,11 @@ Use `insert_mode: "between"` with `from_node_id` and `to_node_id`, or `insert_mo
 | ------------------------- | ------ | -------- | --------------------------------------------------------------------- |
 | `$workflow_id`            | string | Yes      | The ID of the workflow.                                               |
 | `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
-| `$insert_mode`            | string | Yes      | `between` or `before`.                                                |
+| `$insert_mode`            | string | Yes      | `between`, `before`, or `after`.                                      |
 | `$node_type_name`         | string | Yes      | One of `AudienceFilter`, `BranchNode`, `ExperimentBranchNode`, `TimerAction`, `SendEmailAction`, `VariantNode`. |
-| `$from_node_id`           | string | No       | Required when `insert_mode` is `between`.                             |
-| `$to_node_id`             | string | No       | Required when `insert_mode` is `between`.                             |
-| `$before_node_id`         | string | No       | Required when `insert_mode` is `before`.                              |
+| `$from_node_id`           | string | Cond.    | Required for `between` and `after`. Not permitted for `before`.       |
+| `$to_node_id`             | string | Cond.    | Required for `between`. For `before`, provide this or `$before_node_id` (not both). Not permitted for `after`. |
+| `$before_node_id`         | string | Cond.    | Deprecated. For `before`, provide this or `$to_node_id` (not both).   |
 
 #### Example
 
@@ -1789,6 +1793,22 @@ $result = $loops->workflows->createNode(
   insert_mode: 'between',
   node_type_name: 'TimerAction',
   from_node_id: 'clt0u3v5w0232sy31kqvbzs34',
+  to_node_id: 'clt0u3v5w0232sy31kqvbzs35'
+);
+
+$result = $loops->workflows->createNode(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
+  insert_mode: 'after',
+  node_type_name: 'TimerAction',
+  from_node_id: 'clt0u3v5w0232sy31kqvbzs34'
+);
+
+$result = $loops->workflows->createNode(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
+  insert_mode: 'before',
+  node_type_name: 'TimerAction',
   to_node_id: 'clt0u3v5w0232sy31kqvbzs35'
 );
 ```
@@ -1875,6 +1895,34 @@ $result = $loops->workflows->addBranch(
   workflow_id: 'cls9t2u4v0210rx20jpuary23',
   node_id: 'clt0u3v5w0232sy31kqvbzs34',
   expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8'
+);
+```
+
+---
+
+### workflows->rerouteNode()
+
+Reroute a source node's outgoing connection to another valid target node. The source node must have exactly one outgoing connection. Branch and experiment branch nodes cannot be rerouted with this endpoint.
+
+[API Reference](https://loops.so/docs/api-reference/reroute-node-connection)
+
+#### Parameters
+
+| Name                      | Type   | Required | Notes                                                                 |
+| ------------------------- | ------ | -------- | --------------------------------------------------------------------- |
+| `$workflow_id`            | string | Yes      | The ID of the workflow.                                               |
+| `$node_id`                | string | Yes      | The ID of the source workflow node.                                   |
+| `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
+| `$new_target_node_id`     | string | Yes      | The node that should receive the connection.                          |
+
+#### Example
+
+```php
+$result = $loops->workflows->rerouteNode(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  node_id: 'clt0u3v5w0232sy31kqvbzs34',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
+  new_target_node_id: 'cln3c5d7e9f1g3h5i7j9k1l3'
 );
 ```
 
