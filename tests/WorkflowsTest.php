@@ -202,6 +202,80 @@ class WorkflowsTest extends TestCase
     $this->assertEquals('node_3', $result['node']['id']);
   }
 
+  public function testCreateNodeBeforeWithToNodeId(): void
+  {
+    $workflowId = 'wf_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/workflows/' . $workflowId . '/nodes',
+        $this->callback(function ($options) {
+          return $options['json'] === [
+            'expectedRevisionId' => 'rev_123',
+            'insertMode' => 'before',
+            'nodeTypeName' => 'TimerAction',
+            'toNodeId' => 'node_2',
+          ];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'node' => ['id' => 'node_3', 'typeName' => 'TimerAction'],
+          'workflow' => ['id' => $workflowId],
+        ])
+      ));
+
+    $result = $this->client->workflows->createNode(
+      workflow_id: $workflowId,
+      expected_revision_id: 'rev_123',
+      insert_mode: 'before',
+      node_type_name: 'TimerAction',
+      to_node_id: 'node_2'
+    );
+
+    $this->assertEquals('node_3', $result['node']['id']);
+  }
+
+  public function testCreateNodeAfter(): void
+  {
+    $workflowId = 'wf_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/workflows/' . $workflowId . '/nodes',
+        $this->callback(function ($options) {
+          return $options['json'] === [
+            'expectedRevisionId' => 'rev_123',
+            'insertMode' => 'after',
+            'nodeTypeName' => 'TimerAction',
+            'fromNodeId' => 'node_1',
+          ];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'node' => ['id' => 'node_3', 'typeName' => 'TimerAction'],
+          'workflow' => ['id' => $workflowId],
+        ])
+      ));
+
+    $result = $this->client->workflows->createNode(
+      workflow_id: $workflowId,
+      expected_revision_id: 'rev_123',
+      insert_mode: 'after',
+      node_type_name: 'TimerAction',
+      from_node_id: 'node_1'
+    );
+
+    $this->assertEquals('node_3', $result['node']['id']);
+  }
+
   public function testUpdateNode(): void
   {
     $workflowId = 'wf_123';
@@ -314,6 +388,43 @@ class WorkflowsTest extends TestCase
     $this->assertEquals('node_child', $result['node']['id']);
   }
 
+  public function testRerouteNode(): void
+  {
+    $workflowId = 'wf_123';
+    $nodeId = 'node_source';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/workflows/' . $workflowId . '/nodes/' . $nodeId . '/reroute',
+        $this->callback(function ($options) {
+          return $options['json'] === [
+            'expectedRevisionId' => 'rev_123',
+            'newTargetNodeId' => 'node_target',
+          ];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'id' => $nodeId,
+          'nextNodeIds' => ['node_target'],
+          'workflowRevisionId' => 'rev_456',
+          'workflow' => ['id' => $workflowId],
+        ])
+      ));
+
+    $result = $this->client->workflows->rerouteNode(
+      workflow_id: $workflowId,
+      node_id: $nodeId,
+      expected_revision_id: 'rev_123',
+      new_target_node_id: 'node_target'
+    );
+
+    $this->assertEquals(['node_target'], $result['nextNodeIds']);
+  }
+
   public function testDeleteNodeRecursive(): void
   {
     $workflowId = 'wf_123';
@@ -337,7 +448,6 @@ class WorkflowsTest extends TestCase
           'status' => 'dryRun',
           'nodeIds' => [$nodeId, 'node_789'],
           'queuedContactCount' => 0,
-          'queuedContactLimitReached' => false,
         ])
       ));
 

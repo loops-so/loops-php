@@ -105,12 +105,42 @@ class Workflows
         ];
 
         if ($insert_mode === 'between') {
+            if ($from_node_id === null || $to_node_id === null) {
+                throw new \InvalidArgumentException(message: 'from_node_id and to_node_id are required when insert_mode is "between".');
+            }
+            if ($before_node_id !== null) {
+                throw new \InvalidArgumentException(message: 'before_node_id is not permitted when insert_mode is "between".');
+            }
             $payload['fromNodeId'] = $from_node_id;
             $payload['toNodeId'] = $to_node_id;
         } elseif ($insert_mode === 'before') {
-            $payload['beforeNodeId'] = $before_node_id;
+            if ($from_node_id !== null) {
+                throw new \InvalidArgumentException(message: 'from_node_id is not permitted when insert_mode is "before".');
+            }
+            if ($to_node_id !== null && $before_node_id !== null) {
+                throw new \InvalidArgumentException(message: 'Provide either to_node_id or before_node_id when insert_mode is "before", not both.');
+            }
+            if ($to_node_id === null && $before_node_id === null) {
+                throw new \InvalidArgumentException(message: 'to_node_id or before_node_id is required when insert_mode is "before".');
+            }
+            if ($to_node_id !== null) {
+                $payload['toNodeId'] = $to_node_id;
+            } else {
+                $payload['beforeNodeId'] = $before_node_id;
+            }
+        } elseif ($insert_mode === 'after') {
+            if ($from_node_id === null) {
+                throw new \InvalidArgumentException(message: 'from_node_id is required when insert_mode is "after".');
+            }
+            if ($to_node_id !== null) {
+                throw new \InvalidArgumentException(message: 'to_node_id is not permitted when insert_mode is "after".');
+            }
+            if ($before_node_id !== null) {
+                throw new \InvalidArgumentException(message: 'before_node_id is not permitted when insert_mode is "after".');
+            }
+            $payload['fromNodeId'] = $from_node_id;
         } else {
-            throw new \InvalidArgumentException(message: 'insert_mode must be "between" or "before".');
+            throw new \InvalidArgumentException(message: 'insert_mode must be "between", "before", or "after".');
         }
 
         return $this->client->query(method: 'POST', endpoint: 'v1/workflows/' . $workflow_id . '/nodes', options: [
@@ -171,6 +201,24 @@ class Workflows
             options: [
                 'json' => [
                     'expectedRevisionId' => $expected_revision_id,
+                ]
+            ]
+        );
+    }
+
+    public function rerouteNode(
+        string $workflow_id,
+        string $node_id,
+        ?string $expected_revision_id,
+        string $new_target_node_id
+    ): mixed {
+        return $this->client->query(
+            method: 'POST',
+            endpoint: 'v1/workflows/' . $workflow_id . '/nodes/' . $node_id . '/reroute',
+            options: [
+                'json' => [
+                    'expectedRevisionId' => $expected_revision_id,
+                    'newTargetNodeId' => $new_target_node_id,
                 ]
             ]
         );

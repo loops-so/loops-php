@@ -1,3 +1,12 @@
+## v3.3.0 - Aug 7, 2026
+
+OpenAPI 1.21.6:
+
+- Added `workflows->rerouteNode()` to reroute a node's outgoing connection to another target.
+- `workflows->createNode()` now accepts `insert_mode: "after"`, and prefers `to_node_id` over now-deprecated `before_node_id` for `before`.
+- Mutation responses for mailing-list changes, node updates, and node deletes now include the latest `workflow`.
+- Removed `queuedContactLimitReached` from workflow mutation responses.
+
 ## v3.2.0 - Aug 3, 2026
 
 OpenAPI 1.21.1:
