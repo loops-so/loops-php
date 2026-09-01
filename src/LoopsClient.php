@@ -128,6 +128,10 @@ class LoopsClient
         throw new Exceptions\APIError(statusCode: $response->getStatusCode(), json: $json);
       }
 
+      if ($response->getStatusCode() === 204) {
+        return null;
+      }
+
       return json_decode(json: $response->getBody()->getContents(), associative: true);
     } catch (\Exception $e) {
       // Pass through any exceptions

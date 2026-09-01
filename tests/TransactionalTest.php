@@ -137,6 +137,7 @@ class TransactionalTest extends TestCase
           'data' => [
             [
               'id' => 'clfn0k1yg001imo0fdeqg30i8',
+              'url' => 'https://app.loops.so/transactional/clfn0k1yg001imo0fdeqg30i8',
               'name' => 'Welcome email',
               'draftEmailMessageId' => null,
               'publishedEmailMessageId' => 'msg_abc123',
@@ -171,6 +172,7 @@ class TransactionalTest extends TestCase
     $this->assertIsArray($result['data']);
     $this->assertNotEmpty($result['data']);
     $this->assertArrayHasKey('id', $result['data'][0]);
+    $this->assertArrayHasKey('url', $result['data'][0]);
     $this->assertArrayHasKey('name', $result['data'][0]);
     $this->assertArrayHasKey('draftEmailMessageId', $result['data'][0]);
     $this->assertArrayHasKey('publishedEmailMessageId', $result['data'][0]);
@@ -194,6 +196,7 @@ class TransactionalTest extends TestCase
         status: 201,
         body: json_encode([
           'id' => 'txn_123',
+          'url' => 'https://app.loops.so/transactional/txn_123',
           'name' => 'Welcome email',
           'draftEmailMessageId' => 'msg_123',
           'draftEmailMessageContentRevisionId' => 'rev_123',
@@ -244,6 +247,7 @@ class TransactionalTest extends TestCase
         status: 200,
         body: json_encode([
           'id' => $transactionalId,
+          'url' => 'https://app.loops.so/transactional/' . $transactionalId,
           'name' => 'Welcome email',
           'draftEmailMessageId' => 'msg_123',
           'publishedEmailMessageId' => 'msg_456',

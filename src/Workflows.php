@@ -61,6 +61,27 @@ class Workflows
         ]);
     }
 
+    public function delete(
+        string $workflow_id,
+        ?string $expected_revision_id,
+        ?bool $confirm_delete = null
+    ): mixed {
+        $payload = array_merge(
+            ['expectedRevisionId' => $expected_revision_id],
+            Util::omitNull([
+                'confirmDelete' => $confirm_delete,
+            ])
+        );
+
+        return $this->client->query(
+            method: 'DELETE',
+            endpoint: 'v1/workflows/' . $workflow_id,
+            options: [
+                'json' => $payload
+            ]
+        );
+    }
+
     public function changeMailingList(
         string $workflow_id,
         ?string $expected_revision_id,

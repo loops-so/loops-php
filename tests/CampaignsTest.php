@@ -54,6 +54,7 @@ class CampaignsTest extends TestCase
         body: json_encode([
           'success' => true,
           'campaignId' => 'camp_123',
+          'url' => 'https://app.loops.so/campaigns/camp_123',
           'name' => 'Spring announcement',
           'status' => 'Draft',
           'createdAt' => '2025-01-01T00:00:00.000Z',
