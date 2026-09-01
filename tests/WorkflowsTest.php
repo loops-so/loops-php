@@ -56,6 +56,7 @@ class WorkflowsTest extends TestCase
         status: 200,
         body: json_encode([
           'id' => 'wf_123',
+          'url' => 'https://app.loops.so/workflows/wf_123',
           'name' => 'Welcome series',
           'status' => 'Draft',
         ])
@@ -102,6 +103,58 @@ class WorkflowsTest extends TestCase
     );
 
     $this->assertEquals('Updated name', $result['name']);
+  }
+
+  public function testDeleteWorkflow(): void
+  {
+    $workflowId = 'wf_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('delete')
+      ->with(
+        'v1/workflows/' . $workflowId,
+        $this->callback(function ($options) {
+          return $options['json'] === [
+            'expectedRevisionId' => 'rev_123',
+          ];
+        })
+      )
+      ->willReturn(new Response(status: 204));
+
+    $result = $this->client->workflows->delete(
+      workflow_id: $workflowId,
+      expected_revision_id: 'rev_123'
+    );
+
+    $this->assertNull($result);
+  }
+
+  public function testDeleteWorkflowWithConfirmDelete(): void
+  {
+    $workflowId = 'wf_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('delete')
+      ->with(
+        'v1/workflows/' . $workflowId,
+        $this->callback(function ($options) {
+          return $options['json'] === [
+            'expectedRevisionId' => 'rev_123',
+            'confirmDelete' => true,
+          ];
+        })
+      )
+      ->willReturn(new Response(status: 204));
+
+    $result = $this->client->workflows->delete(
+      workflow_id: $workflowId,
+      expected_revision_id: 'rev_123',
+      confirm_delete: true
+    );
+
+    $this->assertNull($result);
   }
 
   public function testChangeMailingList(): void

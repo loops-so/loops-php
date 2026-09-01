@@ -1,3 +1,10 @@
+## v3.4.0 - Sep 1, 2026
+
+OpenAPI 1.21.9:
+
+- Added `workflows->delete()` to delete a workflow.
+- Campaign, transactional, and workflow responses now include a `url` field pointing to the resource in the Loops app.
+
 ## v3.3.0 - Aug 7, 2026
 
 OpenAPI 1.21.6:

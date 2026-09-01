@@ -139,6 +139,7 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [workflows->create()](#workflows-create)
 - [workflows->get()](#workflows-get)
 - [workflows->update()](#workflows-update)
+- [workflows->delete()](#workflows-delete)
 - [workflows->changeMailingList()](#workflows-changemailinglist)
 - [workflows->getNode()](#workflows-getnode)
 - [workflows->createNode()](#workflows-createnode)
@@ -917,6 +918,7 @@ $result = $loops->transactional->list(per_page: 15);
   "data": [
     {
       "id": "clfn0k1yg001imo0fdeqg30i8",
+      "url": "https://app.loops.so/transactional/clfn0k1yg001imo0fdeqg30i8",
       "name": "Welcome email",
       "draftEmailMessageId": null,
       "publishedEmailMessageId": "cly8k3m0n0044jpx2bghepq45",
@@ -926,6 +928,7 @@ $result = $loops->transactional->list(per_page: 15);
     },
     {
       "id": "cll42l54f20i1la0lfooe3z12",
+      "url": "https://app.loops.so/transactional/cll42l54f20i1la0lfooe3z12",
       "name": "Password reset",
       "draftEmailMessageId": "cla3r8s9t0422ua56iqovab01",
       "publishedEmailMessageId": "clb4s9t0u0533vb67jrpwbc12",
@@ -937,6 +940,7 @@ $result = $loops->transactional->list(per_page: 15);
     },
     {
       "id": "clw6rbuwp01rmeiyndm80155l",
+      "url": "https://app.loops.so/transactional/clw6rbuwp01rmeiyndm80155l",
       "name": "Team invite",
       "draftEmailMessageId": "clc5t0u1v0644wc78ksqxcd23",
       "publishedEmailMessageId": null,
@@ -979,6 +983,7 @@ $result = $loops->transactional->create(name: 'Welcome email');
 ```json
 {
   "id": "clfq6dinn000yl70fgwwyp82l",
+  "url": "https://app.loops.so/transactional/clfq6dinn000yl70fgwwyp82l",
   "name": "Welcome email",
   "draftEmailMessageId": "cly8k3m0n0044jpx2bghepq45",
   "draftEmailMessageContentRevisionId": "clm9n4o6p0088lrz4dijslt67",
@@ -1376,6 +1381,7 @@ $result = $loops->campaigns->create(
 {
   "success": true,
   "campaignId": "cln4o7p9q0110msw5ekjtmv78",
+  "url": "https://app.loops.so/campaigns/cln4o7p9q0110msw5ekjtmv78",
   "name": "Spring announcement",
   "status": "Draft",
   "createdAt": "2025-01-01T00:00:00.000Z",
@@ -1655,6 +1661,27 @@ $result = $loops->workflows->create(
 );
 ```
 
+#### Response
+
+```json
+{
+  "id": "clw1a3b5c7d9e1f3g5h7i9j1",
+  "url": "https://app.loops.so/workflows/clw1a3b5c7d9e1f3g5h7i9j1",
+  "workflowRevisionId": null,
+  "status": "Draft",
+  "name": "Welcome series",
+  "description": "Onboarding emails for new signups",
+  "mailingListId": null,
+  "rootNodeId": "clt0u3v5w0232sy31kqvbzs34",
+  "nodes": {
+    "clt0u3v5w0232sy31kqvbzs34": {
+      "typeName": "BlankTrigger",
+      "nextNodeIds": ["clt0u3v5w0232sy31kqvbzs35"]
+    }
+  }
+}
+```
+
 ---
 
 ### workflows->get()
@@ -1701,6 +1728,39 @@ $result = $loops->workflows->update(
   workflow_id: 'cls9t2u4v0210rx20jpuary23',
   expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
   name: 'Updated welcome series'
+);
+```
+
+---
+
+### workflows->delete()
+
+Delete a workflow.
+
+Successful deletion returns `null` (HTTP 204 No Content). If the workflow is currently sending or has queued contacts, the API returns HTTP 409. Retry with `confirm_delete: true` to delete the workflow, stop sending, and cancel queued contacts.
+
+[API Reference](https://loops.so/docs/api-reference/delete-workflow)
+
+#### Parameters
+
+| Name                      | Type    | Required | Notes                                                                 |
+| ------------------------- | ------- | -------- | --------------------------------------------------------------------- |
+| `$workflow_id`            | string  | Yes      | The ID of the workflow.                                               |
+| `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
+| `$confirm_delete`         | boolean | No       | Set to `true` after a confirmation-required 409 to confirm deleting a sending workflow or a workflow with queued contacts. |
+
+#### Example
+
+```php
+$result = $loops->workflows->delete(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8'
+);
+
+$result = $loops->workflows->delete(
+  workflow_id: 'cls9t2u4v0210rx20jpuary23',
+  expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
+  confirm_delete: true
 );
 ```
 
