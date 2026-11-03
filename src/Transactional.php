@@ -60,6 +60,11 @@ class Transactional
         return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails/' . $transactional_id);
     }
 
+    public function metrics(string $transactional_id): mixed
+    {
+        return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails/' . $transactional_id . '/metrics');
+    }
+
     public function update(
         string $transactional_id,
         ?string $name = null,

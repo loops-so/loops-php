@@ -1,3 +1,11 @@
+## v3.5.0 - Nov 3, 2026
+
+OpenAPI 1.22.8:
+
+- Added metrics endpoints: `campaigns->metrics()`, `transactional->metrics()`, and `workflows->getNodeMetrics()`.
+- Added `workflowGroups->list()`, `workflowGroups->create()`, `workflowGroups->get()`, and `workflowGroups->update()`.
+- Workflow create/update and responses now support setting a workflow group.
+
 ## v3.4.0 - Sep 1, 2026
 
 OpenAPI 1.21.9:

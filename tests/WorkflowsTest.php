@@ -49,6 +49,7 @@ class WorkflowsTest extends TestCase
             'name' => 'Welcome series',
             'description' => 'Onboarding emails',
             'mailingListId' => 'list_123',
+            'workflowGroupId' => 'grp_123',
           ];
         })
       )
@@ -58,6 +59,7 @@ class WorkflowsTest extends TestCase
           'id' => 'wf_123',
           'url' => 'https://app.loops.so/workflows/wf_123',
           'name' => 'Welcome series',
+          'workflowGroupId' => 'grp_123',
           'status' => 'Draft',
         ])
       ));
@@ -65,7 +67,8 @@ class WorkflowsTest extends TestCase
     $result = $this->client->workflows->create(
       name: 'Welcome series',
       description: 'Onboarding emails',
-      mailing_list_id: 'list_123'
+      mailing_list_id: 'list_123',
+      workflow_group_id: 'grp_123'
     );
 
     $this->assertEquals('wf_123', $result['id']);
@@ -84,6 +87,7 @@ class WorkflowsTest extends TestCase
           return $options['json'] === [
             'expectedRevisionId' => 'rev_123',
             'name' => 'Updated name',
+            'workflowGroupId' => 'grp_456',
           ];
         })
       )
@@ -92,6 +96,7 @@ class WorkflowsTest extends TestCase
         body: json_encode([
           'id' => $workflowId,
           'name' => 'Updated name',
+          'workflowGroupId' => 'grp_456',
           'workflowRevisionId' => 'rev_456',
         ])
       ));
@@ -99,7 +104,8 @@ class WorkflowsTest extends TestCase
     $result = $this->client->workflows->update(
       workflow_id: $workflowId,
       expected_revision_id: 'rev_123',
-      name: 'Updated name'
+      name: 'Updated name',
+      workflow_group_id: 'grp_456'
     );
 
     $this->assertEquals('Updated name', $result['name']);
@@ -214,6 +220,29 @@ class WorkflowsTest extends TestCase
     $result = $this->client->workflows->getNode(workflow_id: $workflowId, node_id: $nodeId);
 
     $this->assertEquals($nodeId, $result['id']);
+  }
+
+  public function testGetWorkflowNodeMetrics(): void
+  {
+    $workflowId = 'wf_123';
+    $nodeId = 'node_456';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('get')
+      ->with('v1/workflows/' . $workflowId . '/nodes/' . $nodeId . '/metrics')
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'sends' => 4210,
+          'opens' => 1922,
+          'clicks' => 301,
+        ])
+      ));
+
+    $result = $this->client->workflows->getNodeMetrics(workflow_id: $workflowId, node_id: $nodeId);
+
+    $this->assertEquals(4210, $result['sends']);
   }
 
   public function testCreateNodeBetween(): void

@@ -26,12 +26,14 @@ class Workflows
     public function create(
         string $name,
         ?string $description = null,
-        ?string $mailing_list_id = null
+        ?string $mailing_list_id = null,
+        ?string $workflow_group_id = null
     ): mixed {
         return $this->client->query(method: 'POST', endpoint: 'v1/workflows', options: [
             'json' => array_merge(['name' => $name], Util::omitNull([
                 'description' => $description,
                 'mailingListId' => $mailing_list_id,
+                'workflowGroupId' => $workflow_group_id,
             ]))
         ]);
     }
@@ -45,14 +47,16 @@ class Workflows
         string $workflow_id,
         ?string $expected_revision_id,
         ?string $name = null,
-        ?string $description = null
+        ?string $description = null,
+        ?string $workflow_group_id = null
     ): mixed {
         $payload = Util::omitNull([
             'name' => $name,
             'description' => $description,
+            'workflowGroupId' => $workflow_group_id,
         ]);
         if ($payload === []) {
-            throw new \InvalidArgumentException(message: 'At least one of name or description must be provided.');
+            throw new \InvalidArgumentException(message: 'At least one of name, description, or workflow_group_id must be provided.');
         }
         $payload = array_merge(['expectedRevisionId' => $expected_revision_id], $payload);
 
@@ -108,6 +112,14 @@ class Workflows
     public function getNode(string $workflow_id, string $node_id): mixed
     {
         return $this->client->query(method: 'GET', endpoint: 'v1/workflows/' . $workflow_id . '/nodes/' . $node_id);
+    }
+
+    public function getNodeMetrics(string $workflow_id, string $node_id): mixed
+    {
+        return $this->client->query(
+            method: 'GET',
+            endpoint: 'v1/workflows/' . $workflow_id . '/nodes/' . $node_id . '/metrics'
+        );
     }
 
     public function createNode(

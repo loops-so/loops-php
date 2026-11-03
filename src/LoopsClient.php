@@ -23,6 +23,7 @@ class LoopsClient
   public Uploads $uploads;
   public AudienceSegments $audienceSegments;
   public Workflows $workflows;
+  public WorkflowGroups $workflowGroups;
   public EventPatterns $eventPatterns;
   public TransactionalGroups $transactionalGroups;
 
@@ -56,6 +57,7 @@ class LoopsClient
     $this->uploads = new Uploads(client: $this);
     $this->audienceSegments = new AudienceSegments(client: $this);
     $this->workflows = new Workflows(client: $this);
+    $this->workflowGroups = new WorkflowGroups(client: $this);
     $this->eventPatterns = new EventPatterns(client: $this);
     $this->transactionalGroups = new TransactionalGroups(client: $this);
   }

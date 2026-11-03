@@ -95,6 +95,28 @@ class CampaignsTest extends TestCase
     $this->assertEquals($campaignId, $result['campaignId']);
   }
 
+  public function testCampaignMetrics(): void
+  {
+    $campaignId = 'camp_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('get')
+      ->with('v1/campaigns/' . $campaignId . '/metrics')
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'sends' => 4210,
+          'opens' => 1922,
+          'clicks' => 301,
+        ])
+      ));
+
+    $result = $this->client->campaigns->metrics(campaign_id: $campaignId);
+
+    $this->assertEquals(4210, $result['sends']);
+  }
+
   public function testUpdateCampaign(): void
   {
     $campaignId = 'camp_123';

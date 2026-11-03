@@ -262,6 +262,28 @@ class TransactionalTest extends TestCase
     $this->assertEquals($transactionalId, $result['id']);
   }
 
+  public function testTransactionalMetrics(): void
+  {
+    $transactionalId = 'txn_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('get')
+      ->with('v1/transactional-emails/' . $transactionalId . '/metrics')
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'sends' => 4210,
+          'deliveries' => 4175,
+          'spamReports' => 1,
+        ])
+      ));
+
+    $result = $this->client->transactional->metrics(transactional_id: $transactionalId);
+
+    $this->assertEquals(4210, $result['sends']);
+  }
+
   public function testUpdateTransactional(): void
   {
     $transactionalId = 'txn_123';
