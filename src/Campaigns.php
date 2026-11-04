@@ -52,6 +52,11 @@ class Campaigns
         return $this->client->query(method: 'GET', endpoint: 'v1/campaigns/' . $campaign_id);
     }
 
+    public function metrics(string $campaign_id): mixed
+    {
+        return $this->client->query(method: 'GET', endpoint: 'v1/campaigns/' . $campaign_id . '/metrics');
+    }
+
     public function update(
         string $campaign_id,
         ?string $name = null,

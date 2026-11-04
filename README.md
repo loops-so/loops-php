@@ -112,6 +112,7 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [transactional->list()](#transactional-list)
 - [transactional->create()](#transactional-create)
 - [transactional->get()](#transactional-get)
+- [transactional->metrics()](#transactional-metrics)
 - [transactional->update()](#transactional-update)
 - [transactional->ensureDraft()](#transactional-ensuredraft)
 - [transactional->publish()](#transactional-publish)
@@ -127,6 +128,7 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [campaigns->list()](#campaigns-list)
 - [campaigns->create()](#campaigns-create)
 - [campaigns->get()](#campaigns-get)
+- [campaigns->metrics()](#campaigns-metrics)
 - [campaigns->update()](#campaigns-update)
 - [campaignGroups->list()](#campaigngroups-list)
 - [campaignGroups->create()](#campaigngroups-create)
@@ -142,12 +144,17 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [workflows->delete()](#workflows-delete)
 - [workflows->changeMailingList()](#workflows-changemailinglist)
 - [workflows->getNode()](#workflows-getnode)
+- [workflows->getNodeMetrics()](#workflows-getnodemetrics)
 - [workflows->createNode()](#workflows-createnode)
 - [workflows->updateNode()](#workflows-updatenode)
 - [workflows->deleteNode()](#workflows-deletenode)
 - [workflows->addBranch()](#workflows-addbranch)
 - [workflows->rerouteNode()](#workflows-reroutenode)
 - [workflows->deleteNodeRecursive()](#workflows-deletenoderecursive)
+- [workflowGroups->list()](#workflowgroups-list)
+- [workflowGroups->create()](#workflowgroups-create)
+- [workflowGroups->get()](#workflowgroups-get)
+- [workflowGroups->update()](#workflowgroups-update)
 - [eventPatterns->list()](#eventpatterns-list)
 - [eventPatterns->get()](#eventpatterns-get)
 - [eventPatterns->getByName()](#eventpatterns-getbyname)
@@ -1016,6 +1023,38 @@ $result = $loops->transactional->get(transactional_id: 'clfq6dinn000yl70fgwwyp82
 
 ---
 
+### transactional->metrics()
+
+Retrieve all-time delivery metrics for a transactional email, totalled across every published version.
+
+[API Reference](https://loops.so/docs/api-reference/get-transactional-email-metrics)
+
+#### Parameters
+
+| Name                | Type   | Required | Notes                              |
+| ------------------- | ------ | -------- | ---------------------------------- |
+| `$transactional_id` | string | Yes      | The ID of the transactional email. |
+
+#### Example
+
+```php
+$result = $loops->transactional->metrics(transactional_id: 'cll42l54f20i1la0lfooe3z12');
+```
+
+#### Response
+
+```json
+{
+  "sends": 4210,
+  "deliveries": 4175,
+  "spamReports": 1,
+  "hardBounces": 9,
+  "softBounces": 13
+}
+```
+
+---
+
 ### transactional->update()
 
 Update a transactional email.
@@ -1413,6 +1452,40 @@ $result = $loops->campaigns->get(campaign_id: 'cln4o7p9q0110msw5ekjtmv78');
 
 ---
 
+### campaigns->metrics()
+
+Retrieve all-time email engagement metrics for a sent campaign.
+
+[API Reference](https://loops.so/docs/api-reference/get-campaign-metrics)
+
+#### Parameters
+
+| Name           | Type   | Required | Notes                   |
+| -------------- | ------ | -------- | ----------------------- |
+| `$campaign_id` | string | Yes      | The ID of the campaign. |
+
+#### Example
+
+```php
+$result = $loops->campaigns->metrics(campaign_id: 'cln0y4p6r003yl70i1j2k3l4m');
+```
+
+#### Response
+
+```json
+{
+  "sends": 4210,
+  "opens": 1922,
+  "clicks": 301,
+  "unsubscribes": 12,
+  "spamReports": 1,
+  "hardBounces": 9,
+  "softBounces": 13
+}
+```
+
+---
+
 ### campaigns->update()
 
 Update a draft campaign's name, group, audience, or scheduling.
@@ -1636,6 +1709,31 @@ List workflows.
 $result = $loops->workflows->list();
 ```
 
+#### Response
+
+```json
+{
+  "pagination": {
+    "totalResults": 1,
+    "returnedResults": 1,
+    "perPage": 20,
+    "totalPages": 1,
+    "nextCursor": null,
+    "nextPage": null
+  },
+  "data": [
+    {
+      "id": "clw1a3b5c7d9e1f3g5h7i9j1",
+      "url": "https://app.loops.so/workflows/clw1a3b5c7d9e1f3g5h7i9j1",
+      "name": "Welcome series",
+      "workflowGroupId": "clg7n5p3q1r9s7t5u3v1w9y7",
+      "createdAt": "2025-06-29T07:47:39.370Z",
+      "updatedAt": "2025-06-29T07:47:39.370Z"
+    }
+  ]
+}
+```
+
 ---
 
 ### workflows->create()
@@ -1646,11 +1744,12 @@ Create a draft workflow with a blank trigger and exit node.
 
 #### Parameters
 
-| Name               | Type   | Required | Notes                                              |
-| ------------------ | ------ | -------- | -------------------------------------------------- |
-| `$name`            | string | Yes      | The workflow name.                                 |
-| `$description`     | string | No       | The workflow description.                          |
-| `$mailing_list_id` | string | No       | The mailing list the workflow sends to.            |
+| Name                  | Type   | Required | Notes                                                                                                        |
+| --------------------- | ------ | -------- | ------------------------------------------------------------------------------------------------------------ |
+| `$name`               | string | Yes      | The workflow name.                                                                                           |
+| `$description`        | string | No       | The workflow description.                                                                                    |
+| `$mailing_list_id`    | string | No       | The mailing list the workflow sends to.                                                                      |
+| `$workflow_group_id`  | string | No       | The ID of the workflow group to create this workflow in. Defaults to the team's Unsorted group when omitted. |
 
 #### Example
 
@@ -1671,6 +1770,7 @@ $result = $loops->workflows->create(
   "status": "Draft",
   "name": "Welcome series",
   "description": "Onboarding emails for new signups",
+  "workflowGroupId": "clg7n5p3q1r9s7t5u3v1w9y7",
   "mailingListId": null,
   "rootNodeId": "clt0u3v5w0232sy31kqvbzs34",
   "nodes": {
@@ -1702,13 +1802,35 @@ Get a simplified workflow graph.
 $result = $loops->workflows->get(workflow_id: 'cls9t2u4v0210rx20jpuary23');
 ```
 
+#### Response
+
+```json
+{
+  "id": "clw1a3b5c7d9e1f3g5h7i9j1",
+  "url": "https://app.loops.so/workflows/clw1a3b5c7d9e1f3g5h7i9j1",
+  "status": "Draft",
+  "name": "Welcome series",
+  "description": "Onboarding emails for new signups",
+  "workflowGroupId": "clg7n5p3q1r9s7t5u3v1w9y7",
+  "mailingListId": null,
+  "rootNodeId": "clt0u3v5w0232sy31kqvbzs34",
+  "workflowRevisionId": "clrev0w0r1k2f3l4o5w6",
+  "nodes": {
+    "clt0u3v5w0232sy31kqvbzs34": {
+      "typeName": "BlankTrigger",
+      "nextNodeIds": ["clt0u3v5w0232sy31kqvbzs35"]
+    }
+  }
+}
+```
+
 ---
 
 ### workflows->update()
 
-Update a workflow's display properties.
+Update a workflow's name, description, and/or workflow group.
 
-At least one of `$name` or `$description` must be provided. To change the mailing list, use `workflows->changeMailingList()`.
+At least one of `$name`, `$description`, or `$workflow_group_id` must be provided. To change the mailing list, use `workflows->changeMailingList()`.
 
 [API Reference](https://loops.so/docs/api-reference/update-workflow)
 
@@ -1720,6 +1842,7 @@ At least one of `$name` or `$description` must be provided. To change the mailin
 | `$expected_revision_id`   | string\|null | Yes | The latest workflow revision token. Pass `null` for older workflows. |
 | `$name`                   | string | No       | The updated workflow name.                                            |
 | `$description`            | string | No       | The updated workflow description.                                     |
+| `$workflow_group_id`      | string | No       | The ID of the workflow group to move this workflow into.              |
 
 #### Example
 
@@ -1729,6 +1852,28 @@ $result = $loops->workflows->update(
   expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
   name: 'Updated welcome series'
 );
+```
+
+#### Response
+
+```json
+{
+  "id": "clw1a3b5c7d9e1f3g5h7i9j1",
+  "url": "https://app.loops.so/workflows/clw1a3b5c7d9e1f3g5h7i9j1",
+  "status": "Draft",
+  "name": "Updated welcome series",
+  "description": "Onboarding emails for new signups",
+  "workflowGroupId": "clg7n5p3q1r9s7t5u3v1w9y7",
+  "mailingListId": null,
+  "rootNodeId": "clt0u3v5w0232sy31kqvbzs34",
+  "workflowRevisionId": "clrev0w0r1k2f3l4o5w6",
+  "nodes": {
+    "clt0u3v5w0232sy31kqvbzs34": {
+      "typeName": "BlankTrigger",
+      "nextNodeIds": ["clt0u3v5w0232sy31kqvbzs35"]
+    }
+  }
+}
 ```
 
 ---
@@ -1817,6 +1962,44 @@ $result = $loops->workflows->getNode(
   workflow_id: 'cls9t2u4v0210rx20jpuary23',
   node_id: 'clt0u3v5w0232sy31kqvbzs34'
 );
+```
+
+---
+
+### workflows->getNodeMetrics()
+
+Retrieve all-time email engagement metrics for a workflow `SendEmailAction` node. Nodes of any other type return a `400` response.
+
+[API Reference](https://loops.so/docs/api-reference/get-workflow-node-metrics)
+
+#### Parameters
+
+| Name           | Type   | Required | Notes                        |
+| -------------- | ------ | -------- | ---------------------------- |
+| `$workflow_id` | string | Yes      | The ID of the workflow.      |
+| `$node_id`     | string | Yes      | The ID of the workflow node. |
+
+#### Example
+
+```php
+$result = $loops->workflows->getNodeMetrics(
+  workflow_id: 'clw1a3b5c7d9e1f3g5h7i9j1',
+  node_id: 'cln8p0q2r4s6t8u0v2w4x6z8'
+);
+```
+
+#### Response
+
+```json
+{
+  "sends": 4210,
+  "opens": 1922,
+  "clicks": 301,
+  "unsubscribes": 12,
+  "spamReports": 1,
+  "hardBounces": 9,
+  "softBounces": 13
+}
 ```
 
 ---
@@ -2012,6 +2195,95 @@ $result = $loops->workflows->deleteNodeRecursive(
   node_id: 'clt0u3v5w0232sy31kqvbzs34',
   expected_revision_id: 'clrev1s10n2i3d4e5f6g7h8',
   dry_run: true
+);
+```
+
+---
+
+### workflowGroups->list()
+
+List workflow groups.
+
+[API Reference](https://loops.so/docs/api-reference/list-workflow-groups)
+
+#### Parameters
+
+| Name        | Type    | Required | Notes                                                                                                                         |
+| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+
+#### Example
+
+```php
+$result = $loops->workflowGroups->list();
+```
+
+---
+
+### workflowGroups->create()
+
+Create a workflow group.
+
+[API Reference](https://loops.so/docs/api-reference/create-workflow-group)
+
+#### Parameters
+
+| Name            | Type   | Required | Notes                                   |
+| --------------- | ------ | -------- | --------------------------------------- |
+| `$name`         | string | Yes      | Cannot be the reserved name "Unsorted". |
+| `$description`  | string | No       | An optional description for the group.  |
+
+#### Example
+
+```php
+$result = $loops->workflowGroups->create(name: 'Onboarding', description: 'Top of funnel');
+```
+
+---
+
+### workflowGroups->get()
+
+Get a workflow group by ID.
+
+[API Reference](https://loops.so/docs/api-reference/get-workflow-group)
+
+#### Parameters
+
+| Name                  | Type   | Required | Notes                         |
+| --------------------- | ------ | -------- | ----------------------------- |
+| `$workflow_group_id`  | string | Yes      | The ID of the workflow group. |
+
+#### Example
+
+```php
+$result = $loops->workflowGroups->get(workflow_group_id: 'clg7n5p3q1r9s7t5u3v1w9y7');
+```
+
+---
+
+### workflowGroups->update()
+
+Update a workflow group's name or description.
+
+At least one field alongside `workflow_group_id` must be provided. The reserved `"Unsorted"` group cannot be edited.
+
+[API Reference](https://loops.so/docs/api-reference/update-workflow-group)
+
+#### Parameters
+
+| Name                  | Type   | Required | Notes                         |
+| --------------------- | ------ | -------- | ----------------------------- |
+| `$workflow_group_id`  | string | Yes      | The ID of the workflow group. |
+| `$name`               | string | No       | Cannot be the reserved name "Unsorted". |
+| `$description`        | string | No       |                               |
+
+#### Example
+
+```php
+$result = $loops->workflowGroups->update(
+  workflow_group_id: 'clg7n5p3q1r9s7t5u3v1w9y7',
+  name: 'Updated name'
 );
 ```
 
