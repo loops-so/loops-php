@@ -161,6 +161,7 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [emailMessages->get()](#emailmessages-get)
 - [emailMessages->update()](#emailmessages-update)
 - [emailMessages->preview()](#emailmessages-preview)
+- [emailMessages->render()](#emailmessages-render)
 - [emailMessages->guardian()](#emailmessages-guardian)
 - [transactionalGroups->list()](#transactionalgroups-list)
 - [transactionalGroups->create()](#transactionalgroups-create)
@@ -2427,7 +2428,7 @@ $result = $loops->emailMessages->update(
 
 Send a test preview of an email message to one or more addresses.
 
-[API Reference](https://loops.so/docs/api-reference/send-email-message-preview)
+[API Reference](https://loops.so/docs/api-reference/preview-email-message)
 
 #### Parameters
 
@@ -2445,6 +2446,32 @@ Send a test preview of an email message to one or more addresses.
 $result = $loops->emailMessages->preview(
   email_message_id: 'cly8k3m0n0044jpx2bghepq45',
   emails: ['test@example.com'],
+  contact_properties: ['firstName' => 'Alex']
+);
+```
+
+---
+
+### emailMessages->render()
+
+Render an email message as HTML without sending it. The HTML matches a preview email body. Accepted variable fields depend on the parent type: campaigns accept `contactProperties`, workflows accept `contactProperties` and `eventProperties`, and transactional emails accept `dataVariables`.
+
+[API Reference](https://loops.so/docs/api-reference/render-email-message)
+
+#### Parameters
+
+| Name                   | Type     | Required | Notes                                                                             |
+| ---------------------- | -------- | -------- | --------------------------------------------------------------------------------- |
+| `$email_message_id`    | string   | Yes      | The ID of the email message.                                                      |
+| `$contact_properties`  | array    | No       | Contact property values to render. Accepted for campaign and workflow emails.     |
+| `$event_properties`    | array    | No       | Event property values to render. Accepted for workflow emails only.               |
+| `$data_variables`      | array    | No       | Transactional data variables to render. Accepted for transactional emails only.   |
+
+#### Example
+
+```php
+$result = $loops->emailMessages->render(
+  email_message_id: 'cly8k3m0n0044jpx2bghepq45',
   contact_properties: ['firstName' => 'Alex']
 );
 ```
