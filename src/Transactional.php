@@ -35,12 +35,13 @@ class Transactional
         ]);
     }
 
-    public function list(?int $per_page = null, ?string $cursor = null): mixed
+    public function list(?int $per_page = null, ?string $cursor = null, ?string $transactional_group_id = null): mixed
     {
         return $this->client->query(method: 'GET', endpoint: 'v1/transactional-emails', options: [
             'query' => Util::omitNull([
                 'perPage' => $per_page,
                 'cursor' => $cursor,
+                'transactionalGroupId' => $transactional_group_id,
             ])
         ]);
     }

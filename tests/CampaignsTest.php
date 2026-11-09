@@ -38,6 +38,33 @@ class CampaignsTest extends TestCase
     $this->assertTrue($result['success']);
   }
 
+  public function testListCampaignsWithGroupFilter(): void
+  {
+    $campaignGroupId = 'grp_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('get')
+      ->with(
+        'v1/campaigns',
+        $this->callback(function ($options) use ($campaignGroupId) {
+          return isset($options['query'])
+            && $options['query']['campaignGroupId'] === $campaignGroupId;
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'pagination' => ['nextCursor' => null],
+          'data' => []
+        ])
+      ));
+
+    $result = $this->client->campaigns->list(campaign_group_id: $campaignGroupId);
+
+    $this->assertEquals([], $result['data']);
+  }
+
   public function testCreateCampaign(): void
   {
     $this->mockHttpClient

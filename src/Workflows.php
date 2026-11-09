@@ -13,12 +13,13 @@ class Workflows
         $this->client = $client;
     }
 
-    public function list(?int $per_page = null, ?string $cursor = null): mixed
+    public function list(?int $per_page = null, ?string $cursor = null, ?string $workflow_group_id = null): mixed
     {
         return $this->client->query(method: 'GET', endpoint: 'v1/workflows', options: [
             'query' => Util::omitNull([
                 'perPage' => $per_page,
                 'cursor' => $cursor,
+                'workflowGroupId' => $workflow_group_id,
             ])
         ]);
     }

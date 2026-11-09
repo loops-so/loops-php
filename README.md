@@ -898,10 +898,11 @@ Get a paginated list of transactional emails, most recently created first.
 
 #### Parameters
 
-| Name        | Type    | Required | Notes                                                                                                                         |
-| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
-| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| Name                       | Type    | Required | Notes                                                                                                                         |
+| -------------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page`                | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`                  | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| `$transactional_group_id`  | string  | No       | Only return transactional emails in this transactional group. An ID that matches no group returns an empty list.              |
 
 #### Example
 
@@ -909,6 +910,8 @@ Get a paginated list of transactional emails, most recently created first.
 $result = $loops->transactional->list();
 
 $result = $loops->transactional->list(per_page: 15);
+
+$result = $loops->transactional->list(transactional_group_id: 'clz1a2b3c4d5e6f7g8h9i0j1');
 ```
 
 #### Response
@@ -1373,15 +1376,18 @@ List campaigns.
 
 #### Parameters
 
-| Name        | Type    | Required | Notes                                                                                                                         |
-| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
-| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| Name                  | Type    | Required | Notes                                                                                                                         |
+| --------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page`           | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`             | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| `$campaign_group_id`  | string  | No       | Only return campaigns in this campaign group. An ID that matches no group returns an empty list.                              |
 
 #### Example
 
 ```php
 $result = $loops->campaigns->list();
+
+$result = $loops->campaigns->list(campaign_group_id: 'clz1a2b3c4d5e6f7g8h9i0j1');
 ```
 
 ---
@@ -1699,15 +1705,18 @@ List workflows.
 
 #### Parameters
 
-| Name        | Type    | Required | Notes                                                                                                                         |
-| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
-| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| Name                  | Type    | Required | Notes                                                                                                                         |
+| --------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page`           | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`             | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| `$workflow_group_id`  | string  | No       | Only return workflows in this workflow group. An ID that matches no group returns an empty list.                              |
 
 #### Example
 
 ```php
 $result = $loops->workflows->list();
+
+$result = $loops->workflows->list(workflow_group_id: 'clz1a2b3c4d5e6f7g8h9i0j1');
 ```
 
 #### Response
