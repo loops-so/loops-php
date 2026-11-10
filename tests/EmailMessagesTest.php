@@ -125,6 +125,63 @@ class EmailMessagesTest extends TestCase
     $this->assertTrue($result['success']);
   }
 
+  public function testRenderEmailMessage(): void
+  {
+    $emailMessageId = 'msg_123';
+    $html = '<html><body>Hello, Alex!</body></html>';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/email-messages/' . $emailMessageId . '/render',
+        $this->callback(function ($options) {
+          return $options['json'] === [
+            'contactProperties' => ['firstName' => 'Alex'],
+          ];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'html' => $html
+        ])
+      ));
+
+    $result = $this->client->emailMessages->render(
+      email_message_id: $emailMessageId,
+      contact_properties: ['firstName' => 'Alex']
+    );
+
+    $this->assertEquals($html, $result['html']);
+  }
+
+  public function testRenderEmailMessageWithEmptyBody(): void
+  {
+    $emailMessageId = 'msg_123';
+    $html = '<html><body></body></html>';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/email-messages/' . $emailMessageId . '/render',
+        $this->callback(function ($options) {
+          return $options['json'] === [];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'html' => $html
+        ])
+      ));
+
+    $result = $this->client->emailMessages->render(email_message_id: $emailMessageId);
+
+    $this->assertEquals($html, $result['html']);
+  }
+
   public function testGuardianEmailMessage(): void
   {
     $emailMessageId = 'msg_123';

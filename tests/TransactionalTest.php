@@ -181,6 +181,33 @@ class TransactionalTest extends TestCase
     $this->assertArrayHasKey('dataVariables', $result['data'][0]);
   }
 
+  public function testListTransactionalsWithGroupFilter(): void
+  {
+    $transactionalGroupId = 'grp_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('get')
+      ->with(
+        'v1/transactional-emails',
+        $this->callback(function ($options) use ($transactionalGroupId) {
+          return isset($options['query'])
+            && $options['query']['transactionalGroupId'] === $transactionalGroupId;
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'pagination' => ['nextCursor' => null],
+          'data' => []
+        ])
+      ));
+
+    $result = $this->client->transactional->list(transactional_group_id: $transactionalGroupId);
+
+    $this->assertEquals([], $result['data']);
+  }
+
   public function testCreateTransactional(): void
   {
     $this->mockHttpClient

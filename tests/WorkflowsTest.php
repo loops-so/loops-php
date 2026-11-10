@@ -37,6 +37,33 @@ class WorkflowsTest extends TestCase
     $this->assertEquals([], $result['data']);
   }
 
+  public function testListWorkflowsWithGroupFilter(): void
+  {
+    $workflowGroupId = 'grp_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('get')
+      ->with(
+        'v1/workflows',
+        $this->callback(function ($options) use ($workflowGroupId) {
+          return isset($options['query'])
+            && $options['query']['workflowGroupId'] === $workflowGroupId;
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'pagination' => ['nextCursor' => null],
+          'data' => []
+        ])
+      ));
+
+    $result = $this->client->workflows->list(workflow_group_id: $workflowGroupId);
+
+    $this->assertEquals([], $result['data']);
+  }
+
   public function testCreateWorkflow(): void
   {
     $this->mockHttpClient

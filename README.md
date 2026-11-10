@@ -161,6 +161,7 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [emailMessages->get()](#emailmessages-get)
 - [emailMessages->update()](#emailmessages-update)
 - [emailMessages->preview()](#emailmessages-preview)
+- [emailMessages->render()](#emailmessages-render)
 - [emailMessages->guardian()](#emailmessages-guardian)
 - [transactionalGroups->list()](#transactionalgroups-list)
 - [transactionalGroups->create()](#transactionalgroups-create)
@@ -897,10 +898,11 @@ Get a paginated list of transactional emails, most recently created first.
 
 #### Parameters
 
-| Name        | Type    | Required | Notes                                                                                                                         |
-| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
-| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| Name                       | Type    | Required | Notes                                                                                                                         |
+| -------------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page`                | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`                  | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| `$transactional_group_id`  | string  | No       | Only return transactional emails in this transactional group. An ID that matches no group returns an empty list.              |
 
 #### Example
 
@@ -908,6 +910,8 @@ Get a paginated list of transactional emails, most recently created first.
 $result = $loops->transactional->list();
 
 $result = $loops->transactional->list(per_page: 15);
+
+$result = $loops->transactional->list(transactional_group_id: 'clz1a2b3c4d5e6f7g8h9i0j1');
 ```
 
 #### Response
@@ -1372,15 +1376,18 @@ List campaigns.
 
 #### Parameters
 
-| Name        | Type    | Required | Notes                                                                                                                         |
-| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
-| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| Name                  | Type    | Required | Notes                                                                                                                         |
+| --------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page`           | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`             | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| `$campaign_group_id`  | string  | No       | Only return campaigns in this campaign group. An ID that matches no group returns an empty list.                              |
 
 #### Example
 
 ```php
 $result = $loops->campaigns->list();
+
+$result = $loops->campaigns->list(campaign_group_id: 'clz1a2b3c4d5e6f7g8h9i0j1');
 ```
 
 ---
@@ -1698,15 +1705,18 @@ List workflows.
 
 #### Parameters
 
-| Name        | Type    | Required | Notes                                                                                                                         |
-| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
-| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
-| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| Name                  | Type    | Required | Notes                                                                                                                         |
+| --------------------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page`           | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`             | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+| `$workflow_group_id`  | string  | No       | Only return workflows in this workflow group. An ID that matches no group returns an empty list.                              |
 
 #### Example
 
 ```php
 $result = $loops->workflows->list();
+
+$result = $loops->workflows->list(workflow_group_id: 'clz1a2b3c4d5e6f7g8h9i0j1');
 ```
 
 #### Response
@@ -2427,7 +2437,7 @@ $result = $loops->emailMessages->update(
 
 Send a test preview of an email message to one or more addresses.
 
-[API Reference](https://loops.so/docs/api-reference/send-email-message-preview)
+[API Reference](https://loops.so/docs/api-reference/preview-email-message)
 
 #### Parameters
 
@@ -2445,6 +2455,32 @@ Send a test preview of an email message to one or more addresses.
 $result = $loops->emailMessages->preview(
   email_message_id: 'cly8k3m0n0044jpx2bghepq45',
   emails: ['test@example.com'],
+  contact_properties: ['firstName' => 'Alex']
+);
+```
+
+---
+
+### emailMessages->render()
+
+Render an email message as HTML without sending it. The HTML matches a preview email body. Accepted variable fields depend on the parent type: campaigns accept `contactProperties`, workflows accept `contactProperties` and `eventProperties`, and transactional emails accept `dataVariables`.
+
+[API Reference](https://loops.so/docs/api-reference/render-email-message)
+
+#### Parameters
+
+| Name                   | Type     | Required | Notes                                                                             |
+| ---------------------- | -------- | -------- | --------------------------------------------------------------------------------- |
+| `$email_message_id`    | string   | Yes      | The ID of the email message.                                                      |
+| `$contact_properties`  | array    | No       | Contact property values to render. Accepted for campaign and workflow emails.     |
+| `$event_properties`    | array    | No       | Event property values to render. Accepted for workflow emails only.               |
+| `$data_variables`      | array    | No       | Transactional data variables to render. Accepted for transactional emails only.   |
+
+#### Example
+
+```php
+$result = $loops->emailMessages->render(
+  email_message_id: 'cly8k3m0n0044jpx2bghepq45',
   contact_properties: ['firstName' => 'Alex']
 );
 ```

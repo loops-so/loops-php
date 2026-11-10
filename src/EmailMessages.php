@@ -81,6 +81,23 @@ class EmailMessages
         ]);
     }
 
+    public function render(
+        string $email_message_id,
+        ?array $contact_properties = null,
+        ?array $event_properties = null,
+        ?array $data_variables = null
+    ): mixed {
+        $payload = Util::omitNull([
+            'contactProperties' => $contact_properties,
+            'eventProperties' => $event_properties,
+            'dataVariables' => $data_variables,
+        ]);
+
+        return $this->client->query(method: 'POST', endpoint: 'v1/email-messages/' . $email_message_id . '/render', options: [
+            'json' => $payload
+        ]);
+    }
+
     public function guardian(string $email_message_id): mixed
     {
         return $this->client->query(method: 'GET', endpoint: 'v1/email-messages/' . $email_message_id . '/guardian');

@@ -1,3 +1,10 @@
+## v3.6.0 - Nov 9, 2026
+
+OpenAPI 1.23.0:
+
+- Added `emailMessages->render()` to render an email message as HTML without sending it.
+- Added group filters to list endpoints: `campaigns->list(campaign_group_id:)`, `workflows->list(workflow_group_id:)`, and `transactional->list(transactional_group_id:)`.
+
 ## v3.5.0 - Nov 3, 2026
 
 OpenAPI 1.22.8:
