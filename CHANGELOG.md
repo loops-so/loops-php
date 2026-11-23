@@ -1,13 +1,12 @@
-## 3.8.0
+## 3.7.0 - Nov 23, 2026
+
+- Added `Webhooks::verify()` to verify inbound Loops webhook signatures.
 
 OpenAPI 1.24.0:
 
 - Added footers: `footers->list()`, `footers->get()`, `footers->create()`, `footers->update()`, `footers->delete()`, `footers->setDefault()`, `footers->getVariant()`, `footers->updateVariant()`, and `footers->publishVariant()`.
 - `emailMessages->update()` now accepts `footer_id` (including `null` for the system default footer).
 
-## 3.7.0 - Nov 23, 2026
-
-- Added `Webhooks::verify()` to verify inbound Loops webhook signatures.
 
 ## v3.6.0 - Nov 9, 2026
 
