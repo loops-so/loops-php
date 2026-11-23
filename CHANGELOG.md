@@ -7,7 +7,6 @@ OpenAPI 1.24.0:
 - Added footers: `footers->list()`, `footers->get()`, `footers->create()`, `footers->update()`, `footers->delete()`, `footers->setDefault()`, `footers->getVariant()`, `footers->updateVariant()`, and `footers->publishVariant()`.
 - `emailMessages->update()` now accepts `footer_id` (including `null` for the system default footer).
 
-
 ## v3.6.0 - Nov 9, 2026
 
 OpenAPI 1.23.0:
