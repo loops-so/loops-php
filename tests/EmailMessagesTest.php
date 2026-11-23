@@ -243,4 +243,72 @@ class EmailMessagesTest extends TestCase
 
     $this->assertEquals('plain', $result['emailFormat']);
   }
+
+  public function testUpdateEmailMessageFooter(): void
+  {
+    $emailMessageId = 'msg_123';
+    $footerId = 'clf0o1t2e3r4i5d6a7b8c9d0';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/email-messages/' . $emailMessageId,
+        $this->callback(function ($options) use ($footerId) {
+          return $options['json'] === [
+            'expectedRevisionId' => 'rev_123',
+            'footerId' => $footerId,
+          ];
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'id' => $emailMessageId,
+          'footerId' => $footerId,
+          'contentRevisionId' => 'rev_456',
+        ])
+      ));
+
+    $result = $this->client->emailMessages->update(
+      email_message_id: $emailMessageId,
+      expected_revision_id: 'rev_123',
+      footer_id: $footerId
+    );
+
+    $this->assertEquals($footerId, $result['footerId']);
+  }
+
+  public function testUpdateEmailMessageFooterNull(): void
+  {
+    $emailMessageId = 'msg_123';
+
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/email-messages/' . $emailMessageId,
+        $this->callback(function ($options) {
+          return array_key_exists('footerId', $options['json'])
+            && $options['json']['footerId'] === null
+            && $options['json']['expectedRevisionId'] === 'rev_123';
+        })
+      )
+      ->willReturn(new Response(
+        status: 200,
+        body: json_encode([
+          'id' => $emailMessageId,
+          'footerId' => null,
+          'contentRevisionId' => 'rev_456',
+        ])
+      ));
+
+    $result = $this->client->emailMessages->update(
+      email_message_id: $emailMessageId,
+      expected_revision_id: 'rev_123',
+      footer_id: null
+    );
+
+    $this->assertNull($result['footerId']);
+  }
 }

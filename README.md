@@ -161,6 +161,15 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [components->get()](#components-get)
 - [components->create()](#components-create)
 - [components->update()](#components-update)
+- [footers->list()](#footers-list)
+- [footers->get()](#footers-get)
+- [footers->create()](#footers-create)
+- [footers->update()](#footers-update)
+- [footers->delete()](#footers-delete)
+- [footers->setDefault()](#footers-setdefault)
+- [footers->getVariant()](#footers-getvariant)
+- [footers->updateVariant()](#footers-updatevariant)
+- [footers->publishVariant()](#footers-publishvariant)
 - [campaigns->list()](#campaigns-list)
 - [campaigns->create()](#campaigns-create)
 - [campaigns->get()](#campaigns-get)
@@ -1436,6 +1445,223 @@ $result = $loops->components->update(
 
 ---
 
+### footers->list()
+
+Retrieve a paginated list of footers, most recently created first.
+
+[API Reference](https://loops.so/docs/api-reference/list-footers)
+
+#### Parameters
+
+| Name        | Type    | Required | Notes                                                                                                                         |
+| ----------- | ------- | -------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| `$per_page` | integer | No       | How many results to return per page. Must be between 10 and 50. Defaults to 20 if omitted.                                    |
+| `$cursor`   | string  | No       | A cursor, to return a specific page of results. Cursors can be found from the `pagination.nextCursor` value in each response. |
+
+#### Example
+
+```php
+$result = $loops->footers->list();
+
+$result = $loops->footers->list(per_page: 15, cursor: 'clyo0q4wo01p59fsecyxqsh38');
+```
+
+---
+
+### footers->get()
+
+Retrieve a single footer by ID, including its variants.
+
+[API Reference](https://loops.so/docs/api-reference/get-footer)
+
+#### Parameters
+
+| Name         | Type   | Required | Notes                 |
+| ------------ | ------ | -------- | --------------------- |
+| `$footer_id` | string | Yes      | The ID of the footer. |
+
+#### Example
+
+```php
+$result = $loops->footers->get(footer_id: 'clf0o1t2e3r4i5d6a7b8c9d0');
+```
+
+---
+
+### footers->create()
+
+Create a footer with one variant. The variant starts with an unpublished draft that includes the company name, company address and unsubscribe link. Emails cannot use the footer until you publish the variant.
+
+[API Reference](https://loops.so/docs/api-reference/create-footer)
+
+#### Parameters
+
+| Name    | Type   | Required | Notes                                                           |
+| ------- | ------ | -------- | --------------------------------------------------------------- |
+| `$name` | string | No       | The name of the footer. Defaults to "Custom footer" if omitted. |
+
+#### Example
+
+```php
+$result = $loops->footers->create(name: 'Main footer');
+```
+
+---
+
+### footers->update()
+
+Update a footer's name or placement. Changes apply at once, including to running workflows. Emails already sent don't change. To change the default footer, use [`footers->setDefault()`](#footers-setdefault).
+
+At least one of `$name` or `$placement` must be provided.
+
+[API Reference](https://loops.so/docs/api-reference/update-footer)
+
+#### Parameters
+
+| Name         | Type   | Required | Notes                                                                                  |
+| ------------ | ------ | -------- | -------------------------------------------------------------------------------------- |
+| `$footer_id` | string | Yes      | The ID of the footer.                                                                  |
+| `$name`      | string | No       | The new name of the footer.                                                            |
+| `$placement` | string | No       | Whether the footer is rendered inside the email body (`inside`) or below it (`below`). |
+
+#### Example
+
+```php
+$result = $loops->footers->update(
+  footer_id: 'clf0o1t2e3r4i5d6a7b8c9d0',
+  name: 'Marketing footer',
+  placement: 'below'
+);
+```
+
+---
+
+### footers->delete()
+
+Delete a footer and its variants. You cannot delete the team's default footer or a footer that emails use.
+
+[API Reference](https://loops.so/docs/api-reference/delete-footer)
+
+#### Parameters
+
+| Name         | Type   | Required | Notes                 |
+| ------------ | ------ | -------- | --------------------- |
+| `$footer_id` | string | Yes      | The ID of the footer. |
+
+#### Example
+
+```php
+$loops->footers->delete(footer_id: 'clf0o1t2e3r4i5d6a7b8c9d0');
+```
+
+#### Response
+
+No response body (`204`).
+
+---
+
+### footers->setDefault()
+
+Make a published footer the team's default footer. New campaign and workflow emails use the default footer. `$existing_emails` picks which existing emails switch to it.
+
+[API Reference](https://loops.so/docs/api-reference/set-default-footer)
+
+#### Parameters
+
+| Name               | Type   | Required | Notes                                                                                                                                                                                              |
+| ------------------ | ------ | -------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$footer_id`       | string | Yes      | The ID of the footer.                                                                                                                                                                              |
+| `$existing_emails` | string | Yes      | Which existing campaign and workflow emails switch to this footer: `previousDefault`, `all`, or `none`. With `none`, existing emails keep their footer and only new emails use this footer. |
+
+#### Example
+
+```php
+$result = $loops->footers->setDefault(
+  footer_id: 'clf0o1t2e3r4i5d6a7b8c9d0',
+  existing_emails: 'all'
+);
+```
+
+---
+
+### footers->getVariant()
+
+Retrieve a footer variant's draft and published content as LMX.
+
+[API Reference](https://loops.so/docs/api-reference/get-footer-variant)
+
+#### Parameters
+
+| Name          | Type   | Required | Notes                  |
+| ------------- | ------ | -------- | ---------------------- |
+| `$footer_id`  | string | Yes      | The ID of the footer.  |
+| `$variant_id` | string | Yes      | The ID of the variant. |
+
+#### Example
+
+```php
+$result = $loops->footers->getVariant(
+  footer_id: 'clf0o1t2e3r4i5d6a7b8c9d0',
+  variant_id: 'clv1a2r3i4a5n6t7i8d9e0f1'
+);
+```
+
+---
+
+### footers->updateVariant()
+
+Update a footer variant's draft LMX content. Emails keep the variant's published content until you publish the updated variant.
+
+[API Reference](https://loops.so/docs/api-reference/update-footer-variant)
+
+#### Parameters
+
+| Name                    | Type   | Required | Notes                                     |
+| ----------------------- | ------ | -------- | ----------------------------------------- |
+| `$footer_id`            | string | Yes      | The ID of the footer.                     |
+| `$variant_id`           | string | Yes      | The ID of the variant.                    |
+| `$expected_revision_id` | string | Yes      | The `contentRevisionId` you last fetched. |
+| `$lmx`                  | string | Yes      | The new draft content as LMX.             |
+
+#### Example
+
+```php
+$result = $loops->footers->updateVariant(
+  footer_id: 'clf0o1t2e3r4i5d6a7b8c9d0',
+  variant_id: 'clv1a2r3i4a5n6t7i8d9e0f1',
+  expected_revision_id: 'clr2e3v4i5s6i7o8n9i0d1e2',
+  lmx: '{system.company_name}, {system.company_address}. <Link href="{system.unsubscribe_link}">Unsubscribe</Link>'
+);
+```
+
+---
+
+### footers->publishVariant()
+
+Publish the variant's draft LMX content so emails that use the footer immediately use it. The draft must include `{system.company_name}` and `{system.company_address}` in the text, and `{system.unsubscribe_link}` as the URL of a link or button.
+
+[API Reference](https://loops.so/docs/api-reference/publish-footer-variant)
+
+#### Parameters
+
+| Name                    | Type   | Required | Notes                                     |
+| ----------------------- | ------ | -------- | ----------------------------------------- |
+| `$footer_id`            | string | Yes      | The ID of the footer.                     |
+| `$variant_id`           | string | Yes      | The ID of the variant.                    |
+| `$expected_revision_id` | string | Yes      | The `contentRevisionId` you last fetched. |
+
+#### Example
+
+```php
+$result = $loops->footers->publishVariant(
+  footer_id: 'clf0o1t2e3r4i5d6a7b8c9d0',
+  variant_id: 'clv1a2r3i4a5n6t7i8d9e0f1',
+  expected_revision_id: 'clr2e3v4i5s6i7o8n9i0d1e2'
+);
+```
+
+---
+
 ### campaigns->list()
 
 List campaigns.
@@ -2475,6 +2701,7 @@ At least one field must be provided.
 | `$contact_properties_fallbacks` | array | No | Contact property fallback values. Pass `null` as a value to remove an individual fallback entry. |
 | `$event_properties_fallbacks` | array | No | Event property fallback values. Pass `null` as a value to remove an individual fallback entry. |
 | `$data_variables_fallbacks` | array | No | Data variable fallback values. Pass `null` as a value to remove an individual fallback entry. |
+| `$footer_id` | string\|null | No | Apply a specific footer to this email message. Use `null` for the system default footer. Omit to keep the current footer. Only for teams with footers enabled, and only for campaign and workflow emails. |
 
 
 #### Example
