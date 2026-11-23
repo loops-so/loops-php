@@ -1,4 +1,4 @@
-## Unreleased
+## 3.7.0 - Nov 23, 2026
 
 - Added `Webhooks::verify()` to verify inbound Loops webhook signatures.
 
