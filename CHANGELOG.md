@@ -1,3 +1,7 @@
+## Unreleased
+
+- Added `Webhooks::verify()` to verify inbound Loops webhook signatures.
+
 ## v3.6.0 - Nov 9, 2026
 
 OpenAPI 1.23.0:

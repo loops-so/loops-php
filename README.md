@@ -77,6 +77,42 @@ try {
 }
 ```
 
+## Verifying webhooks
+
+Use `Webhooks::verify()` to confirm that an inbound webhook was signed by Loops. Pass the **raw request body string** (not a parsed JSON object) and your signing secret from [Settings → Webhooks](https://app.loops.so/settings?page=webhooks).
+
+```php
+use Loops\Webhooks;
+use Loops\Exceptions\WebhookVerificationError;
+
+$rawBody = file_get_contents('php://input');
+
+try {
+    $event = Webhooks::verify(
+        headers: getallheaders(),
+        rawBody: $rawBody,
+        secret: getenv('LOOPS_SIGNING_SECRET')
+    );
+
+    // process $event...
+    http_response_code(200);
+    echo json_encode(['ok' => true, 'eventName' => $event['eventName']]);
+} catch (WebhookVerificationError $e) {
+    $status = match ($e->getErrorCode()) {
+        WebhookVerificationError::MISSING_SECRET => 500,
+        WebhookVerificationError::INVALID_SIGNATURE,
+        WebhookVerificationError::INVALID_TIMESTAMP => 401,
+        default => 400,
+    };
+    http_response_code($status);
+    echo json_encode(['message' => $e->getMessage()]);
+}
+```
+
+`verify` throws `WebhookVerificationError` with an error code of `MISSING_SECRET`, `MISSING_HEADERS`, `INVALID_TIMESTAMP`, `INVALID_SIGNATURE`, or `INVALID_BODY` (via `getErrorCode()`).
+
+See the [webhooks docs](https://loops.so/docs/webhooks) for event payloads and setup.
+
 ## Default contact properties
 
 Each contact in Loops has a set of default properties. These will always be returned in API results.
@@ -168,6 +204,38 @@ You can use custom contact properties in API calls. Please make sure to [add cus
 - [transactionalGroups->get()](#transactionalgroups-get)
 - [transactionalGroups->update()](#transactionalgroups-update)
 - [uploads->upload()](#uploads-upload)
+- [Webhooks::verify()](#webhooksverify)
+
+---
+
+### Webhooks::verify()
+
+Verify that an inbound webhook request was signed by Loops and return the parsed JSON payload.
+
+[Webhooks docs](https://loops.so/docs/webhooks#verify-requests)
+
+#### Parameters
+
+| Name                 | Type   | Required | Notes                                                                 |
+| -------------------- | ------ | -------- | --------------------------------------------------------------------- |
+| `$headers`           | array  | Yes      | Request headers (`webhook-id`, `webhook-timestamp`, `webhook-signature`). Keys are matched case-insensitively. |
+| `$rawBody`           | string | Yes      | Exact raw request body string. Do not pass parsed JSON.               |
+| `$secret`            | string | Yes      | Signing secret from Settings → Webhooks (may include `whsec_` prefix). |
+| `$toleranceSeconds`  | int    | No       | Max age of `webhook-timestamp` in seconds. Defaults to `300`.         |
+
+#### Example
+
+```php
+$event = Webhooks::verify(
+  headers: getallheaders(),
+  rawBody: file_get_contents('php://input'),
+  secret: getenv('LOOPS_SIGNING_SECRET')
+);
+```
+
+#### Response
+
+Returns the decoded webhook JSON payload on success. Throws `WebhookVerificationError` on failure.
 
 ---
 
