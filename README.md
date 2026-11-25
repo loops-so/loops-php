@@ -91,7 +91,7 @@ try {
     $event = Webhooks::verify(
         headers: getallheaders(),
         rawBody: $rawBody,
-        secret: getenv('LOOPS_SIGNING_SECRET')
+        secret: getenv('LOOPS_SIGNING_SECRET') ?: ''
     );
 
     // process $event...
@@ -238,7 +238,7 @@ Verify that an inbound webhook request was signed by Loops and return the parsed
 $event = Webhooks::verify(
   headers: getallheaders(),
   rawBody: file_get_contents('php://input'),
-  secret: getenv('LOOPS_SIGNING_SECRET')
+  secret: getenv('LOOPS_SIGNING_SECRET') ?: ''
 );
 ```
 

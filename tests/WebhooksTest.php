@@ -161,6 +161,54 @@ class WebhooksTest extends TestCase
     }
   }
 
+  public function testThrowsMissingSecretWhenSecretIsNotValidBase64(): void
+  {
+    $payload = $this->validPayload();
+
+    try {
+      Webhooks::verify(
+        headers: $payload['headers'],
+        rawBody: $payload['rawBody'],
+        secret: 'whsec_!!!not-base64!!!'
+      );
+      $this->fail('expected Webhooks::verify to throw');
+    } catch (WebhookVerificationError $error) {
+      $this->assertSame(WebhookVerificationError::MISSING_SECRET, $error->getErrorCode());
+      $this->assertSame('Webhook signing secret is not valid base64', $error->getMessage());
+    }
+  }
+
+  /**
+   * @dataProvider emptyDecodedSecretProvider
+   */
+  public function testThrowsMissingSecretWhenDecodedSecretIsEmpty(string $secret): void
+  {
+    $payload = $this->validPayload();
+
+    try {
+      Webhooks::verify(
+        headers: $payload['headers'],
+        rawBody: $payload['rawBody'],
+        secret: $secret
+      );
+      $this->fail('expected Webhooks::verify to throw');
+    } catch (WebhookVerificationError $error) {
+      $this->assertSame(WebhookVerificationError::MISSING_SECRET, $error->getErrorCode());
+      $this->assertSame('Missing webhook signing secret', $error->getMessage());
+    }
+  }
+
+  /**
+   * @return array<string, array{0: string}>
+   */
+  public function emptyDecodedSecretProvider(): array
+  {
+    return [
+      'prefix only' => ['whsec_'],
+      'whitespace' => ['   '],
+    ];
+  }
+
   public function testThrowsMissingHeadersWhenRequiredHeaderIsAbsent(): void
   {
     $payload = $this->validPayload();
@@ -180,7 +228,10 @@ class WebhooksTest extends TestCase
     }
   }
 
-  public function testThrowsInvalidTimestampForNonNumericTimestamp(): void
+  /**
+   * @dataProvider invalidTimestampProvider
+   */
+  public function testThrowsInvalidTimestampForNonDigitTimestamp(string $timestamp): void
   {
     $payload = $this->validPayload();
 
@@ -188,7 +239,7 @@ class WebhooksTest extends TestCase
       Webhooks::verify(
         headers: [
           'webhook-id' => $payload['id'],
-          'webhook-timestamp' => 'not-a-number',
+          'webhook-timestamp' => $timestamp,
           'webhook-signature' => 'v1,abc',
         ],
         rawBody: $payload['rawBody'],
@@ -198,6 +249,20 @@ class WebhooksTest extends TestCase
     } catch (WebhookVerificationError $error) {
       $this->assertSame(WebhookVerificationError::INVALID_TIMESTAMP, $error->getErrorCode());
     }
+  }
+
+  /**
+   * @return array<string, array{0: string}>
+   */
+  public function invalidTimestampProvider(): array
+  {
+    return [
+      'non-numeric' => ['not-a-number'],
+      'float' => ['1730000000.5'],
+      'exponent' => ['1e9'],
+      'signed' => ['+1730000000'],
+      'leading whitespace' => [' 1730000000'],
+    ];
   }
 
   public function testThrowsInvalidTimestampWhenOutsideTolerance(): void

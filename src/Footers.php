@@ -26,7 +26,8 @@ class Footers
     public function create(?string $name = null): mixed
     {
         return $this->client->query(method: 'POST', endpoint: 'v1/footers', options: [
-            'json' => Util::omitNull([
+            // Cast so an omitted name encodes as JSON object `{}`, not array `[]`.
+            'json' => (object) Util::omitNull([
                 'name' => $name,
             ])
         ]);

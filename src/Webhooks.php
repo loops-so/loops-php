@@ -50,7 +50,7 @@ final class Webhooks
       );
     }
 
-    if (!is_numeric($timestamp)) {
+    if (!ctype_digit($timestamp)) {
       throw new WebhookVerificationError(
         message: 'webhook-timestamp is not a valid number',
         errorCode: WebhookVerificationError::INVALID_TIMESTAMP
@@ -72,8 +72,14 @@ final class Webhooks
     $key = base64_decode($encoded, strict: true);
     if ($key === false) {
       throw new WebhookVerificationError(
-        message: 'Invalid signature',
-        errorCode: WebhookVerificationError::INVALID_SIGNATURE
+        message: 'Webhook signing secret is not valid base64',
+        errorCode: WebhookVerificationError::MISSING_SECRET
+      );
+    }
+    if ($key === '') {
+      throw new WebhookVerificationError(
+        message: 'Missing webhook signing secret',
+        errorCode: WebhookVerificationError::MISSING_SECRET
       );
     }
 

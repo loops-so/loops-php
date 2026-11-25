@@ -82,7 +82,8 @@ class FootersTest extends TestCase
       ->with(
         'v1/footers',
         $this->callback(function ($options) {
-          return $options['json'] === ['name' => 'Main footer'];
+          return $options['json'] instanceof \stdClass
+            && (array) $options['json'] === ['name' => 'Main footer'];
         })
       )
       ->willReturn(new Response(
@@ -99,6 +100,35 @@ class FootersTest extends TestCase
     $result = $this->client->footers->create(name: 'Main footer');
 
     $this->assertEquals('Main footer', $result['name']);
+  }
+
+  public function testCreateFooterWithoutName(): void
+  {
+    $this->mockHttpClient
+      ->expects($this->once())
+      ->method('post')
+      ->with(
+        'v1/footers',
+        $this->callback(function ($options) {
+          return $options['json'] instanceof \stdClass
+            && (array) $options['json'] === []
+            && json_encode($options['json']) === '{}';
+        })
+      )
+      ->willReturn(new Response(
+        status: 201,
+        body: json_encode([
+          'id' => 'clf0o1t2e3r4i5d6a7b8c9d0',
+          'name' => 'Custom footer',
+          'isDefault' => false,
+          'placement' => 'inside',
+          'variants' => []
+        ])
+      ));
+
+    $result = $this->client->footers->create();
+
+    $this->assertEquals('Custom footer', $result['name']);
   }
 
   public function testUpdateFooter(): void
