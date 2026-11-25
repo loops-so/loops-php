@@ -33,24 +33,30 @@ class EmailMessages
         ?string $lmx = null,
         ?array $contact_properties_fallbacks = null,
         ?array $event_properties_fallbacks = null,
-        ?array $data_variables_fallbacks = null
+        ?array $data_variables_fallbacks = null,
+        mixed $footer_id = Core::UNSET
     ): mixed {
-        $payload = Util::omitNull([
-            'expectedRevisionId' => $expected_revision_id,
-            'subject' => $subject,
-            'previewText' => $preview_text,
-            'fromName' => $from_name,
-            'fromEmail' => $from_email,
-            'replyToEmail' => $reply_to_email,
-            'ccEmail' => $cc_email,
-            'bccEmail' => $bcc_email,
-            'languageCode' => $language_code,
-            'emailFormat' => $email_format,
-            'lmx' => $lmx,
-            'contactPropertiesFallbacks' => $contact_properties_fallbacks,
-            'eventPropertiesFallbacks' => $event_properties_fallbacks,
-            'dataVariablesFallbacks' => $data_variables_fallbacks,
-        ]);
+        $payload = array_merge(
+            Util::omitNull([
+                'expectedRevisionId' => $expected_revision_id,
+                'subject' => $subject,
+                'previewText' => $preview_text,
+                'fromName' => $from_name,
+                'fromEmail' => $from_email,
+                'replyToEmail' => $reply_to_email,
+                'ccEmail' => $cc_email,
+                'bccEmail' => $bcc_email,
+                'languageCode' => $language_code,
+                'emailFormat' => $email_format,
+                'lmx' => $lmx,
+                'contactPropertiesFallbacks' => $contact_properties_fallbacks,
+                'eventPropertiesFallbacks' => $event_properties_fallbacks,
+                'dataVariablesFallbacks' => $data_variables_fallbacks,
+            ]),
+            Util::omitUnset([
+                'footerId' => $footer_id,
+            ]),
+        );
         if ($payload === []) {
             throw new \InvalidArgumentException(message: 'At least one field must be provided.');
         }

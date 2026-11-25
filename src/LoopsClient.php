@@ -17,6 +17,7 @@ class LoopsClient
   public DedicatedSendingIps $dedicatedSendingIps;
   public Themes $themes;
   public Components $components;
+  public Footers $footers;
   public Campaigns $campaigns;
   public CampaignGroups $campaignGroups;
   public EmailMessages $emailMessages;
@@ -51,6 +52,7 @@ class LoopsClient
     $this->dedicatedSendingIps = new DedicatedSendingIps(client: $this);
     $this->themes = new Themes(client: $this);
     $this->components = new Components(client: $this);
+    $this->footers = new Footers(client: $this);
     $this->campaigns = new Campaigns(client: $this);
     $this->campaignGroups = new CampaignGroups(client: $this);
     $this->emailMessages = new EmailMessages(client: $this);
